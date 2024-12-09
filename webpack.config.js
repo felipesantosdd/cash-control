@@ -15,21 +15,30 @@ module.exports = {
     filename: 'renderer.js',
   },
   module: {
-    rules: [
+     rules: [
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
-        },
+          loader: 'babel-loader'
+        }
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
-      },
-    ],
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1,
+            }
+          },
+          'postcss-loader'
+        ]
+      }
+    ]
   },
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.js', '.jsx', '.css'],
   },
 };
