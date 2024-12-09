@@ -9,17 +9,19 @@
     "start": "electron .",
     "watch": "npx webpack --watch",
     "build": "npx webpack --config webpack.config.js",
-    "dev": "concurrently \"npm run watch\" \"npm run start\""
+    "dev": "concurrently \"npm run watch\" \"wait-on dist/renderer.js && npm run start\""
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
     "@babel/preset-env": "^7.26.0",
     "@babel/preset-react": "^7.26.3",
     "babel-loader": "^9.2.1",
+    "concurrently": "^8.x.x",
     "electron": "^33.2.1",
+    "electron-reloader": "^1.2.3",
+    "wait-on": "^8.0.1",
     "webpack": "^5.97.1",
-    "webpack-cli": "^5.1.4",
-    "concurrently": "^8.x.x"
+    "webpack-cli": "^5.1.4"
   },
   "dependencies": {
     "react": "^18.x.x",
