@@ -15,6 +15,9 @@
     "@babel/core": "^7.26.0",
     "@babel/preset-env": "^7.26.0",
     "@babel/preset-react": "^7.26.3",
+    "@types/express": "^5.0.0",
+    "@types/sqlite3": "^3.1.11",
+    "@types/uuid": "^10.0.0",
     "autoprefixer": "^10.4.20",
     "babel-loader": "^9.2.1",
     "concurrently": "^8.x.x",
@@ -33,7 +36,12 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^6.1.10",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
     "react": "^18.x.x",
-    "react-dom": "^18.x.x"
+    "react-dom": "^18.x.x",
+    "sqlite3": "^5.1.7",
+    "uuid": "^11.0.3"
   }
 }
