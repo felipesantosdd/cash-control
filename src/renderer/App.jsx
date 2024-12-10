@@ -6,11 +6,13 @@ import { useTransaction } from '../context/TransactionContext';
 
 const App = () => {
     const [isFormOpen, setIsFormOpen] = useState(false);
-    const { loading, transactions, fetchTransactions, createTransaction, calculateBalance } = useTransaction()
+    const {
+        loading,
+        transactions,
+        createTransaction,
+        calculateBalance
+    } = useTransaction();
         
-    useEffect(() => {
-        fetchTransactions();
-    }, []);
 
     const handleSubmit = async (formData) => {
         try {
@@ -22,7 +24,7 @@ const App = () => {
     };
 
     return (
-        <div className="p-6 max-w-6xl mx-auto bg-slate-500">
+        <div className="p-6  mx-auto bg-[#1B212C] h-full w-full">
             <div className="flex justify-between items-center mb-6
             ">
                 <h1 className="text-2xl font-bold">Algo ainda esta errado</h1>

@@ -1,4 +1,5 @@
 import React from 'react';
+const { capitalizeText } = require('../utils/stringUtils');
 
 const TransactionsTable = ({ transactions }) => {
     if (!transactions.length) {
@@ -36,7 +37,7 @@ const TransactionsTable = ({ transactions }) => {
                                         ? 'bg-green-100 text-green-800'
                                         : 'bg-red-100 text-red-800'
                                     }`}>
-                                    {transaction.tipo}
+                                    {capitalizeText(transaction.tipo)}
                                 </span>
                             </td>
                             <td className="px-6 py-4 text-sm text-gray-500">

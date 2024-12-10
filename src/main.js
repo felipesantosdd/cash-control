@@ -1,38 +1,70 @@
 const path = require('path');
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const { getDatabase } = require('./backend/config/database');
+const categoryService = require('./backend/services/categoryService');
+const transactionService = require('./backend/services/transactionService');
 
-try {                              // NOVO: Bloco try-catch para electron-reloader
-  require('electron-reloader')(module, {
-    debug: true,                   // NOVO: Ativa logs de debug
-    watchRenderer: true            // NOVO: Observa mudanças no renderer
-  });
-} catch (_) { console.log('Error'); }
+let mainWindow;
 
 const createWindow = () => {
-  const win = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      nodeIntegration: false,
+      contextIsolation: true,
       preload: path.join(__dirname, './preload.js')
     }
   });
 
-  win.loadFile(path.join(__dirname, './public/index.html'));
-  win.webContents.openDevTools();
+  mainWindow.loadFile(path.join(__dirname, './public/index.html'));
+  mainWindow.webContents.openDevTools();
 };
+
+// IPC Handlers
+ipcMain.handle('create-transaction', async (_, data) => {
+  try {
+    const result = await transactionService.createTransaction(data);
+    return result;
+  } catch (error) {
+    console.error('Erro ao criar transação:', error);
+    throw error;
+  }
+});
+
+ipcMain.handle('get-transactions', async () => {
+  try {
+    const transactions = await transactionService.getAllTransactions();
+    return transactions;
+  } catch (error) {
+    console.error('Erro ao buscar transações:', error);
+    throw error;
+  }
+});
+
+ipcMain.handle('create-category', async (_, name) => {
+  try {
+    const result = await categoryService.createCategory(name);
+    return result;
+  } catch (error) {
+    console.error('Erro ao criar categoria:', error);
+    throw error;
+  }
+});
+
+ipcMain.handle('get-categories', async () => {
+  try {
+    const categories = await categoryService.getAllCategories();
+    return categories;
+  } catch (error) {
+    console.error('Erro ao buscar categorias:', error);
+    throw error;
+  }
+});
 
 const initializeApp = async () => {
   try {
-    // Inicializa o banco de dados
     await getDatabase();
-    
-    // Inicia o servidor Express
-    require('./backend/server');
-    
-    // Cria a janela do Electron
     createWindow();
   } catch (error) {
     console.error('Erro ao inicializar aplicação:', error);

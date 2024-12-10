@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 
 const TransactionContext = createContext({});
 
@@ -9,17 +9,14 @@ export const TRANSACTION_TYPES = {
 
 export const TransactionProvider = ({ children }) => {
     const [transactions, setTransactions] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
-
 
     const fetchTransactions = useCallback(async () => {
         try {
             setLoading(true);
-            const response = await fetch('http://localhost:3000/api/transactions');
-            if (!response.ok) throw new Error('Erro ao buscar transações');
-
-            const data = await response.json();
-            setTransactions(data);
+            const result = await window.api.getTransactions();
+            setTransactions(result);
         } catch (error) {
             console.error('Erro ao buscar transações:', error);
         } finally {
@@ -27,55 +24,54 @@ export const TransactionProvider = ({ children }) => {
         }
     }, []);
 
-
-    const createTransaction = useCallback(async (transactionData) => {
+    const fetchCategories = useCallback(async () => {
         try {
-            const response = await fetch('http://localhost:3000/api/transactions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    valor: Number(transactionData.valor),
-                    tipo: transactionData.tipo,
-                    comentario: transactionData.comentario
-                })
-            });
+            const result = await window.api.getCategories();
+            setCategories(result);
+        } catch (error) {
+            console.error('Erro ao buscar categorias:', error);
+        }
+    }, []);
 
-            if (!response.ok) throw new Error('Erro ao salvar transação');
-
-            const savedTransaction = await response.json();
-        
-            await fetchTransactions();
-            return savedTransaction;
+    const createTransaction = useCallback(async (data) => {
+        try {
+            const result = await window.api.createTransaction(data);
+            await fetchTransactions(); // Atualiza a lista após criar
+            return result;
         } catch (error) {
             console.error('Erro ao criar transação:', error);
             throw error;
         }
     }, [fetchTransactions]);
 
+    const createCategory = useCallback(async (name) => {
+        try {
+            const result = await window.api.createCategory(name);
+            await fetchCategories();
+            return result;
+        } catch (error) {
+            console.error('Erro ao criar categoria:', error);
+            throw error;
+        }
+    }, [fetchCategories]);
 
-    const calculateBalance = useCallback(() => {
-        return transactions.reduce((acc, transaction) => {
-            const valor = Number(transaction.valor);
-            return transaction.tipo === TRANSACTION_TYPES.ENTRADA
-                ? acc + valor
-                : acc - valor;
-        }, 0);
-    }, [transactions]);
-
-
-    const value = {
-        transactions,
-        loading,
-        fetchTransactions,
-        createTransaction,
-        calculateBalance,
-        TRANSACTION_TYPES
-    };
+    // NOVO: Efeito para carregar dados iniciais
+    useEffect(() => {
+        fetchTransactions();
+        fetchCategories();
+    }, [fetchTransactions, fetchCategories]);
 
     return (
-        <TransactionContext.Provider value={value}>
+        <TransactionContext.Provider value={{
+            transactions,
+            categories,
+            loading,
+            fetchTransactions,
+            fetchCategories,
+            createTransaction,
+            createCategory,
+            TRANSACTION_TYPES
+        }}>
             {children}
         </TransactionContext.Provider>
     );

@@ -8,6 +8,6 @@ const container = document.getElementById('root');
 const root = createRoot(container);
 root.render(
     <TransactionProvider>
-        <App />
+        <App className="bg-red " />
     </TransactionProvider>
 );
