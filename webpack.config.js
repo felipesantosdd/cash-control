@@ -4,7 +4,7 @@ module.exports = {
   mode: 'development',
   entry: './src/renderer/index.jsx',
   devtool: 'inline-source-map',
-  target: 'web',     
+  target: 'electron-renderer',   
   watch: true,
   watchOptions: {
     aggregateTimeout: 300,

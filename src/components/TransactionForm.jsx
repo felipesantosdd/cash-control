@@ -27,6 +27,11 @@ const TransactionForm = ({ onClose, onSubmit }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        console.log('Dados sendo enviados:', formData); 
+        if (!formData.category_id) {
+            alert('Por favor, selecione uma categoria');
+            return;
+        }
         onSubmit(formData);
     };
 
@@ -64,6 +69,10 @@ const TransactionForm = ({ onClose, onSubmit }) => {
     useEffect(() => {
         fetchCategories(); 
     }, [fetchCategories]);
+
+    useEffect(() => {
+        console.log(formData)
+    }, [formData])
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

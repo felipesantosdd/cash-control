@@ -27,7 +27,7 @@ const App = () => {
         <div className="p-6  mx-auto bg-[#1B212C] h-full w-full">
             <div className="flex justify-between items-center mb-6
             ">
-                <h1 className="text-2xl font-bold">Algo ainda esta errado</h1>
+                <h1 className="text-2xl font-bold">teste?</h1>
                 <button
                     onClick={() => setIsFormOpen(true)}
                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"

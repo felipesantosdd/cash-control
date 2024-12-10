@@ -4,6 +4,14 @@ const { getDatabase } = require('./backend/config/database');
 const categoryService = require('./backend/services/categoryService');
 const transactionService = require('./backend/services/transactionService');
 
+try {
+  require('electron-reloader')(module, {
+    debug: true,
+    watchRenderer: true
+  });
+} catch (_) { console.log('Error'); }
+
+
 let mainWindow;
 
 const createWindow = () => {

@@ -3,29 +3,33 @@ const Transaction = require('../models/Transaction');
 class TransactionService {
   async createTransaction(transactionData) {
     try {
-      // Validação dos dados
-      const { valor, tipo, comentario } = transactionData;
-      
-      if (!valor || !tipo) {
-        throw new Error('Valor e tipo são campos obrigatórios');
+      // Validações
+      if (!transactionData.valor || isNaN(Number(transactionData.valor))) {
+        throw new Error('Valor inválido');
       }
 
-      if (tipo !== 'entrada' && tipo !== 'saida') {
-        throw new Error('Tipo deve ser entrada ou saida');
+      if (!transactionData.tipo || !['entrada', 'saida'].includes(transactionData.tipo)) {
+        throw new Error('Tipo inválido');
       }
 
-      // Formatação dos dados
-      const formattedTransaction = {
-        valor: Number(valor),
-        tipo,
-        comentario: comentario || ''
-      };
+      if (!transactionData.category_id) {
+        throw new Error('Categoria é obrigatória');
+      }
 
-      // Criação da transação
-      const transaction = await Transaction.create(formattedTransaction);
+      console.log('Dados recebidos para criar transação:', transactionData); // NOVO: Log
+
+      const transaction = await Transaction.create({
+        valor: Number(transactionData.valor),
+        tipo: transactionData.tipo,
+        category_id: transactionData.category_id,
+        comentario: transactionData.comentario || ''
+      });
+
+      console.log('Transação criada:', transaction); // NOVO: Log
       return transaction;
     } catch (error) {
-      throw new Error(`Erro ao criar transação: ${error.message}`);
+      console.error('Erro no service de transação:', error);
+      throw error;
     }
   }
 
