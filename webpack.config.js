@@ -3,9 +3,10 @@ const path = require('path');
 module.exports = {
   mode: 'development',
   entry: './src/renderer/index.jsx',
-  devtool: 'source-map',
-    watch: true,
-    watchOptions: {
+  devtool: 'inline-source-map',
+  target: 'web',     
+  watch: true,
+  watchOptions: {
     aggregateTimeout: 300,
     poll: 1000,
     ignored: /node_modules/

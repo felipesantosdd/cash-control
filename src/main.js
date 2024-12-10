@@ -2,6 +2,13 @@ const path = require('path');
 const { app, BrowserWindow } = require('electron');
 const { getDatabase } = require('./backend/config/database');
 
+try {                              // NOVO: Bloco try-catch para electron-reloader
+  require('electron-reloader')(module, {
+    debug: true,                   // NOVO: Ativa logs de debug
+    watchRenderer: true            // NOVO: Observa mudanças no renderer
+  });
+} catch (_) { console.log('Error'); }
+
 const createWindow = () => {
   const win = new BrowserWindow({
     width: 800,

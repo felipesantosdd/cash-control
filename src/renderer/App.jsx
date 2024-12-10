@@ -58,9 +58,10 @@ const App = () => {
     };
 
     return (
-        <div className="p-6 max-w-6xl mx-auto">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">Controle Financeiro</h1>
+        <div className="p-6 max-w-6xl mx-auto bg-slate-500">
+            <div className="flex justify-between items-center mb-6
+            ">
+                <h1 className="text-2xl font-bold">Algo ainda esta errado</h1>
                 <button
                     onClick={() => setIsFormOpen(true)}
                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
