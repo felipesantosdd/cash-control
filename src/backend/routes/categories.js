@@ -18,9 +18,7 @@ router.get('/', async (req, res) => {
 // Rota para criar uma nova categoria
 router.post('/', async (req, res) => {
   try {
-    console.log('Recebido request para criar categoria:', req.body); // NOVO: Log para debug
     const category = await categoryService.createCategory(req.body.name);
-    console.log('Categoria criada com sucesso:', category); // NOVO: Log para debug
     res.status(201).json(category);
   } catch (error) {
     console.error('Erro na rota:', error); // NOVO: Log para debug

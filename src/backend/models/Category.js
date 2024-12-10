@@ -4,7 +4,7 @@ const { getDatabase } = require('../config/database');
 class Category {
   static async create(name) {
     try {
-        console.log('Model: Iniciando criação no banco:', name); // NOVO: Log
+        
         
         const db = await getDatabase();
         const id = uuidv4();
@@ -21,7 +21,7 @@ class Category {
                     }
                     
                     const category = { id, name };
-                    console.log('Model: Categoria criada com sucesso:', category); // NOVO: Log
+                    
                     resolve(category);
                 }
             );

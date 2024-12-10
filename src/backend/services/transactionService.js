@@ -16,7 +16,7 @@ class TransactionService {
         throw new Error('Categoria é obrigatória');
       }
 
-      console.log('Dados recebidos para criar transação:', transactionData); // NOVO: Log
+      
 
       const transaction = await Transaction.create({
         valor: Number(transactionData.valor),
@@ -24,8 +24,7 @@ class TransactionService {
         category_id: transactionData.category_id,
         comentario: transactionData.comentario || ''
       });
-
-      console.log('Transação criada:', transaction); // NOVO: Log
+      
       return transaction;
     } catch (error) {
       console.error('Erro no service de transação:', error);

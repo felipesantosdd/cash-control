@@ -36,14 +36,7 @@ app.use((err, req, res, next) => {
 
 const PORT = 3000;
 
-const server = app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`);
-    console.log('Rotas disponíveis:');
-    console.log('- POST /api/categories');
-    console.log('- GET /api/categories');
-    console.log('- POST /api/transactions');
-    console.log('- GET /api/transactions');
-});
+const server = app.listen(PORT, () => {});
 
 // NOVO: Tratamento de erros do servidor
 server.on('error', (error) => {

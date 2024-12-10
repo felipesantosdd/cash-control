@@ -32,6 +32,7 @@ const createWindow = () => {
 // IPC Handlers
 ipcMain.handle('create-transaction', async (_, data) => {
   try {
+    console.log(data)
     const result = await transactionService.createTransaction(data);
     return result;
   } catch (error) {

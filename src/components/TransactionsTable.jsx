@@ -30,8 +30,6 @@ const CollapsibleTable = ({ transactions, categories }) => {
         };
     });
 
-    console.log(categories)
-
     const Row = ({ row }) => {
         const [open, setOpen] = useState(false);
 

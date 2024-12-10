@@ -1,33 +1,51 @@
 import React, { useEffect, useState } from 'react';
 import { useTransaction } from '../context/TransactionContext';
-const { capitalizeText } = require('../utils/stringUtils');
-
+import { capitalizeText } from '../utils/stringUtils';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import {
+    Button,
+    InputAdornment,
+    MenuItem,
+    Select,
+    TextField,
+    FormControl,
+    InputLabel
+} from '@mui/material';
 
 const TransactionForm = ({ onClose, onSubmit }) => {
-
-    const { TRANSACTION_TYPES, categories, fetchCategories, createCategory } = useTransaction();  
+    const { TRANSACTION_TYPES, categories, fetchCategories, createCategory } = useTransaction();
 
     const [formData, setFormData] = useState({
-        valor: '',
+        valor: 0,
         tipo: 'entrada',
-        category_id: '', 
-        comentario: ''
+        category_id: '',
+        comentario: '',
+        maturity: null,
+        pay:false
     });
 
-    const [newCategory, setNewCategory] = useState(''); 
+    const [newCategory, setNewCategory] = useState('');
     const [isAddingCategory, setIsAddingCategory] = useState(false);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
+        setFormData((prev) => ({
             ...prev,
-            [name]: capitalizeText(value)
+            [name]: name === 'valor' ? parseFloat(value) || 0 : name === 'comentario' ? capitalizeText(value) : value
+        }));
+    };
+
+    const handleChangeDate = (newValue) => {
+        setFormData((prev) => ({
+            ...prev,
+            maturity: newValue
         }));
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Dados sendo enviados:', formData); 
         if (!formData.category_id) {
             alert('Por favor, selecione uma categoria');
             return;
@@ -38,8 +56,6 @@ const TransactionForm = ({ onClose, onSubmit }) => {
     const handleAddCategory = async (e) => {
         e.preventDefault();
         try {
-            console.log('Tentando criar categoria:', newCategory); // NOVO: Log
-
             if (!newCategory.trim()) {
                 alert('Nome da categoria não pode estar vazio');
                 return;
@@ -48,10 +64,8 @@ const TransactionForm = ({ onClose, onSubmit }) => {
             const capitalizedName = capitalizeText(newCategory);
             const category = await createCategory(capitalizedName);
 
-            console.log('Categoria criada com sucesso:', category); // NOVO: Log
-
             if (category && category.id) {
-                setFormData(prev => ({ ...prev, category_id: category.id }));
+                setFormData((prev) => ({ ...prev, category_id: category.id }));
                 setNewCategory('');
                 setIsAddingCategory(false);
             } else {
@@ -67,121 +81,143 @@ const TransactionForm = ({ onClose, onSubmit }) => {
     };
 
     useEffect(() => {
-        fetchCategories(); 
+        fetchCategories();
     }, [fetchCategories]);
-
-    useEffect(() => {
-        console.log(formData)
-    }, [formData])
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white p-6 rounded-lg">
+            <div className="bg-white p-6 rounded-lg w-2/4">
                 <h2 className="text-xl mb-4">Nova Transação</h2>
                 <form onSubmit={handleSubmit}>
-
-                    <div className="mb-4">
-                        <label className="block mb-2">Categoria:</label>
+                    <FormControl fullWidth className="mb-4">
                         {!isAddingCategory ? (
-                            <div className="flex gap-2">
-                                <select
+                            <FormControl fullWidth>
+                                <InputLabel id="category-select-label" >Categoria</InputLabel>
+                                <Select
+                                    labelId="category-select-label"
                                     name="category_id"
+                                    label="Categoria"
                                     value={formData.category_id}
                                     onChange={handleChange}
-                                    className="border p-2 flex-1 rounded"
-                                    required
-                                >
-                                    <option value="">Selecione uma categoria</option>
-                                    {categories.map(cat => (
-                                        <option key={cat.id} value={cat.id}>
+                                    defaultValue=''
+                     
+                                >                                 
+                                    {categories.map((cat) => (
+                                        <MenuItem key={cat.id} value={cat.id}>
                                             {cat.name}
-                                        </option>
+                                        </MenuItem>
                                     ))}
-                                </select>
-                                <button
+                                </Select>
+                                <Button
+                                    size="medium"
+                                    variant="contained"
                                     type="button"
                                     onClick={() => setIsAddingCategory(true)}
-                                    className="bg-green-500 text-white px-4 py-2 rounded"
+                                    className="mt-2 bg-green-500 text-white mb-[15px]"
+                                    style={{ margin: '10px 0px 15px' }}
                                 >
-                                    Nova
-                                </button>
-                            </div>
+                                    Nova Categoria
+                                </Button>
+                            </FormControl>
                         ) : (
-                            <div className="flex gap-2">
-                                <input
+                            <div className="gap-2 flex flex-col">
+                                <TextField
+                                    fullWidth
+                                    label="Nome da Categoria"
                                     type="text"
                                     value={newCategory}
                                     onChange={(e) => setNewCategory(e.target.value)}
-                                    className="border p-2 flex-1 rounded"
-                                    placeholder="Nome da categoria"
                                 />
-                                <button
-                                    type="button"
-                                    onClick={handleAddCategory}
-                                    className="bg-green-500 text-white px-4 py-2 rounded"
-                                >
-                                    Adicionar
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => setIsAddingCategory(false)}
-                                    className="bg-gray-500 text-white px-4 py-2 rounded"
-                                >
-                                    Cancelar
-                                </button>
+                                    <div className='flex flex-row justify-around mb-[15px]'>
+                                        <Button
+                                            size="medium"
+                                            variant="contained"
+                                            type="button"
+                                            onClick={handleAddCategory}
+                                            className="bg-green-500 text-white w-[45%]"
+                                        >
+                                            Adicionar
+                                        </Button>
+                                        <Button
+                                            size="medium"
+                                            variant="contained"
+                                            type="button"
+                                            onClick={() => setIsAddingCategory(false)}
+                                            className="bg-gray-500 text-white w-[45%]"
+                                        >
+                                            Cancelar
+                                        </Button>
+                                </div>
                             </div>
                         )}
-                    </div>
+                    </FormControl>
 
-                    <div className="mb-4">
-                        <label className="block mb-2">Valor:</label>
-                        <input
-                            type="number"
+                    <FormControl fullWidth style={{margin:'10px 0'}}>
+                        <TextField
                             name="valor"
-                            value={formData.valor}
+                            label="Valor"
+                            value={formData.valor.toString()}
                             onChange={handleChange}
-                            className="border p-2 w-full rounded"
-                            required
+                            InputProps={{
+                                startAdornment: <InputAdornment position="start">R$</InputAdornment>
+                            }}
                         />
-                    </div>
+                    </FormControl>
 
-                    <div className="mb-4">
-                        <label className="block mb-2">Tipo:</label>
-                        <select
+                    <FormControl fullWidth style={{margin:'10px 0'}}>
+                        <InputLabel id="tipo-select-label" shrink>Tipo</InputLabel>
+                        <Select
+                            labelId="tipo-select-label"
                             name="tipo"
+                            label="Tipo"
                             value={formData.tipo}
                             onChange={handleChange}
-                            className="border p-2 w-full rounded"
                         >
-                            <option value="entrada">Entrada</option>
-                            <option value="saida">Saída</option>
-                        </select>
-                    </div>
+                            <MenuItem value="entrada">Entrada</MenuItem>
+                            <MenuItem value="saida">Saída</MenuItem>
+                        </Select>
+                    </FormControl>
 
-                    <div className="mb-4">
-                        <label className="block mb-2">Comentário:</label>
-                        <textarea
+                    <FormControl fullWidth className="m-5" style={{margin:'10px 0'}}>
+                        <TextField
+                            label="Comentário"
                             name="comentario"
                             value={formData.comentario}
                             onChange={handleChange}
-                            className="border p-2 w-full rounded"
                         />
-                    </div>
+                    </FormControl>
+
+                    <FormControl fullWidth style={{margin:'10px 0'}}>
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                                name="maturity"
+                                label="Vencimento"
+                                value={formData.maturity}
+                                onChange={handleChangeDate}
+                            />
+                        </LocalizationProvider>
+                    </FormControl>
 
                     <div className="flex justify-end gap-2">
-                        <button
+                        <Button
+                            size="medium"
+                            variant="outlined"
                             type="button"
                             onClick={onClose}
-                            className="bg-gray-200 px-4 py-2 rounded"
+                            color='error'
+                            className="bg-gray-200"
                         >
                             Cancelar
-                        </button>
-                        <button
+                        </Button>
+                        <Button
+                            size="medium"
+                            color="primary"
+                            variant="outlined"
                             type="submit"
-                            className="bg-blue-500 text-white px-4 py-2 rounded"
+                            className="bg-blue-500 text-white"
                         >
                             Salvar
-                        </button>
+                        </Button>
                     </div>
                 </form>
             </div>

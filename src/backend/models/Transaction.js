@@ -6,25 +6,19 @@ class Transaction {
     const db = await getDatabase();
     return new Promise((resolve, reject) => {
       const id = uuidv4();
-      const { valor, tipo, category_id, comentario } = transaction;
-      
-      console.log('Salvando transação:', { // NOVO: Log para debug
-        id,
-        valor,
-        tipo,
-        category_id,
-        comentario
-      });
-
+      const { valor, tipo, category_id, comentario, maturity, pay } = transaction;
+   
       db.run(
         `INSERT INTO transactions (
           id, 
           valor, 
           tipo, 
           category_id, 
-          comentario, 
-          created_at
-        ) VALUES (?, ?, ?, ?, ?, datetime('now'))`,
+          comentario,
+          maturity,
+          pay, 
+          created_at,
+        ) VALUES (?, ?, ?, ?, ?, ?, ?datetime('now'))`,
         [id, valor, tipo, category_id, comentario],
         function(err) {
           if (err) {
@@ -38,6 +32,8 @@ class Transaction {
               tipo,
               category_id,
               comentario,
+              maturity,
+              pay,
               created_at: new Date().toISOString()
             });
           }

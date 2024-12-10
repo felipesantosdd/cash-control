@@ -36,6 +36,8 @@ const createDatabase = () => {
           tipo TEXT NOT NULL,
           category_id TEXT,
           comentario TEXT,
+          maturity DATETIME,
+          pay BOOLEAN, 
           created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
           FOREIGN KEY (category_id) REFERENCES categories(id)
         )

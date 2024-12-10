@@ -4,7 +4,6 @@ const Category = require('../models/Category');
 class CategoryService {
   async createCategory(name) {
     try {
-        console.log('Service: Iniciando criação de categoria:', name); // NOVO: Log
 
         if (!name || typeof name !== 'string') {
             throw new Error('Nome da categoria é obrigatório e deve ser texto');
@@ -15,7 +14,6 @@ class CategoryService {
             throw new Error('Nome da categoria deve ter pelo menos 2 caracteres');
         }
 
-        console.log('Service: Verificando duplicatas...'); // NOVO: Log
         const existingCategories = await Category.getAll();
         const categoryExists = existingCategories.some(
             cat => cat.name.toLowerCase() === normalizedName.toLowerCase()
@@ -25,9 +23,7 @@ class CategoryService {
             throw new Error('Já existe uma categoria com este nome');
         }
 
-        console.log('Service: Criando categoria...'); // NOVO: Log
         const category = await Category.create(capitalizeText(normalizedName));
-        console.log('Service: Categoria criada:', category); // NOVO: Log
         
         return category;
     } catch (error) {
