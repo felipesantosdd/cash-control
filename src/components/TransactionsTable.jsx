@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { capitalizeText } from '../utils/stringUtils';
 
 const CollapsibleTable = ({ transactions, categories }) => {
     // Agrupar transações por categoria e calcular o resumo
@@ -60,23 +61,27 @@ const CollapsibleTable = ({ transactions, categories }) => {
                                 <Table size="small" aria-label="transactions">
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell>Data</TableCell>
-                                            <TableCell>Valor</TableCell>
                                             <TableCell>Tipo</TableCell>
+                                            <TableCell>Valor</TableCell>
                                             <TableCell>Comentário</TableCell>
+                                            <TableCell>Pago</TableCell>
+                                            <TableCell>Vencimento</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
                                         {row.transactions.map((transaction) => (
                                             <TableRow key={transaction.id}>
-                                                <TableCell>
-                                                    {new Date(transaction.created_at).toLocaleDateString('pt-BR')}
-                                                </TableCell>
+                                                <TableCell>{capitalizeText(transaction.tipo)}</TableCell>
                                                 <TableCell>
                                                     R$ {Number(transaction.valor).toFixed(2)}
                                                 </TableCell>
-                                                <TableCell>{transaction.tipo}</TableCell>
                                                 <TableCell>{transaction.comentario || 'Sem comentário'}</TableCell>
+                                                <TableCell>
+                                                {!!transaction.pay? 'Sim': 'Não'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {new Date(transaction.maturity).toLocaleDateString('pt-BR')}
+                                                </TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
