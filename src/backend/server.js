@@ -47,4 +47,8 @@ server.on('error', (error) => {
     }
 });
 
+process.on('exit', (code) => {
+    console.log(`Processo do Node.js saindo com o código ${code}`);
+  });
+
 module.exports = app;

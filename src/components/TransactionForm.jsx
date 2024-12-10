@@ -11,15 +11,17 @@ import {
     Select,
     TextField,
     FormControl,
-    InputLabel
+    InputLabel,
+    FormHelperText
 } from '@mui/material';
+import dayjs from 'dayjs';
 
 const TransactionForm = ({ onClose, onSubmit }) => {
     const { TRANSACTION_TYPES, categories, fetchCategories, createCategory } = useTransaction();
 
     const [formData, setFormData] = useState({
         valor: 0,
-        tipo: 'entrada',
+        tipo: 'saida',
         category_id: '',
         comentario: '',
         maturity: null,
@@ -28,6 +30,13 @@ const TransactionForm = ({ onClose, onSubmit }) => {
 
     const [newCategory, setNewCategory] = useState('');
     const [isAddingCategory, setIsAddingCategory] = useState(false);
+    const [errors, setErrors] = useState({
+        valor: false,
+        tipo: false,
+        category_id: false,
+        comentario: false,
+        maturity: false
+    });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -35,29 +44,64 @@ const TransactionForm = ({ onClose, onSubmit }) => {
             ...prev,
             [name]: name === 'valor' ? parseFloat(value) || 0 : name === 'comentario' ? capitalizeText(value) : value
         }));
+        setErrors((prev) => ({
+            ...prev,
+            [name]: false
+        }));
     };
+
 
     const handleChangeDate = (newValue) => {
         setFormData((prev) => ({
             ...prev,
-            maturity: newValue
+            maturity: new Date(newValue).toISOString(),
+        }));
+        setErrors((prev) => ({
+            ...prev,
+            maturity: false
         }));
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (!formData.category_id) {
-            alert('Por favor, selecione uma categoria');
-            return;
+        let hasErrors = false;
+
+        if (!formData.valor) {
+            setErrors((prev) => ({ ...prev, valor: true }));
+            hasErrors = true;
         }
-        onSubmit(formData);
+
+        if (!formData.tipo) {
+            setErrors((prev) => ({ ...prev, tipo: true }));
+            hasErrors = true;
+        }
+
+        if (!formData.category_id) {
+            setErrors((prev) => ({ ...prev, category_id: true }));
+            hasErrors = true;
+        }
+
+        if (!formData.comentario.trim()) {
+            setErrors((prev) => ({ ...prev, comentario: true }));
+            hasErrors = true;
+        }
+
+        if (!formData.maturity) {
+            setErrors((prev) => ({ ...prev, maturity: true }));
+            hasErrors = true;
+        }
+
+        if (!hasErrors) {
+            onSubmit(formData);
+        }
     };
+
+
 
     const handleAddCategory = async (e) => {
         e.preventDefault();
         try {
             if (!newCategory.trim()) {
-                alert('Nome da categoria não pode estar vazio');
                 return;
             }
 
@@ -76,7 +120,6 @@ const TransactionForm = ({ onClose, onSubmit }) => {
                 message: error.message,
                 stack: error.stack
             });
-            alert(`Erro ao criar categoria: ${error.message}`);
         }
     };
 
@@ -108,6 +151,9 @@ const TransactionForm = ({ onClose, onSubmit }) => {
                                         </MenuItem>
                                     ))}
                                 </Select>
+                                {errors.category_id && (
+                                    <FormHelperText error>Por favor, selecione uma categoria.</FormHelperText>
+                                )}
                                 <Button
                                     size="medium"
                                     variant="contained"
@@ -128,6 +174,9 @@ const TransactionForm = ({ onClose, onSubmit }) => {
                                     value={newCategory}
                                     onChange={(e) => setNewCategory(e.target.value)}
                                 />
+                                 {errors.category_id && (
+                                    <FormHelperText error>Por favor, digite um nome.</FormHelperText>
+                                )}
                                     <div className='flex flex-row justify-around mb-[15px]'>
                                         <Button
                                             size="medium"
@@ -161,6 +210,8 @@ const TransactionForm = ({ onClose, onSubmit }) => {
                             InputProps={{
                                 startAdornment: <InputAdornment position="start">R$</InputAdornment>
                             }}
+                            error={errors.valor}
+                            helperText={errors.valor && 'Por favor, insira um valor.'}
                         />
                     </FormControl>
 
@@ -176,6 +227,7 @@ const TransactionForm = ({ onClose, onSubmit }) => {
                             <MenuItem value="entrada">Entrada</MenuItem>
                             <MenuItem value="saida">Saída</MenuItem>
                         </Select>
+                        {errors.tipo && <FormHelperText error>Por favor, selecione um tipo.</FormHelperText>}
                     </FormControl>
 
                     <FormControl fullWidth className="m-5" style={{margin:'10px 0'}}>
@@ -185,17 +237,22 @@ const TransactionForm = ({ onClose, onSubmit }) => {
                             value={formData.comentario}
                             onChange={handleChange}
                         />
+                          {errors.comentario && <FormHelperText error>Por favor, insira um comentário..</FormHelperText>}
                     </FormControl>
 
-                    <FormControl fullWidth style={{margin:'10px 0'}}>
-                        <LocalizationProvider dateAdapter={AdapterDayjs}>
-                            <DatePicker
-                                name="maturity"
-                                label="Vencimento"
-                                value={formData.maturity}
-                                onChange={handleChangeDate}
-                            />
-                        </LocalizationProvider>
+                    <FormControl fullWidth style={{ margin: '10px 0' }}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
+                        <DatePicker
+                        name="maturity"
+                        label="Vencimento"
+                        value={formData.maturity ? dayjs(formData.maturity) : null}
+                        onChange={handleChangeDate}
+                        format="DD/MM/YYYY"
+                        />
+                        {errors.maturity && (
+                        <FormHelperText error>Por favor, selecione uma data para o vencimento.</FormHelperText>
+                        )}
+                    </LocalizationProvider>
                     </FormControl>
 
                     <div className="flex justify-end gap-2">

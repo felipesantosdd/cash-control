@@ -7,7 +7,7 @@ class Transaction {
     return new Promise((resolve, reject) => {
       const id = uuidv4();
       const { valor, tipo, category_id, comentario, maturity, pay } = transaction;
-   
+  
       db.run(
         `INSERT INTO transactions (
           id, 
@@ -16,16 +16,15 @@ class Transaction {
           category_id, 
           comentario,
           maturity,
-          pay, 
-          created_at,
-        ) VALUES (?, ?, ?, ?, ?, ?, ?datetime('now'))`,
-        [id, valor, tipo, category_id, comentario],
+          pay,
+          created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
+        [id, valor, tipo, category_id, comentario, maturity, pay],
         function(err) {
           if (err) {
             console.error('Erro ao inserir transação:', err);
             reject(err);
           } else {
-            // MODIFICADO: Retorna todos os dados
             resolve({
               id,
               valor,

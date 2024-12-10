@@ -36,10 +36,9 @@ const createDatabase = () => {
           tipo TEXT NOT NULL,
           category_id TEXT,
           comentario TEXT,
-          maturity DATETIME,
+          maturity TEXT,
           pay BOOLEAN, 
-          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (category_id) REFERENCES categories(id)
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
       `, (err) => {
         if (err) {
@@ -47,6 +46,17 @@ const createDatabase = () => {
           reject(err);
           return;
         }
+      
+        db.run(`
+          ALTER TABLE transactions
+          ADD FOREIGN KEY (category_id) REFERENCES categories(id)
+        `, (err) => {
+          if (err) {
+            console.error('Erro ao adicionar chave estrangeira na tabela de transações:', err);
+            reject(err);
+            return;
+          }
+        });
       });
 
       resolve(db);

@@ -94,3 +94,8 @@ app.on('activate', () => {
     createWindow();
   }
 });
+
+
+app.on('window-all-closed', () => {
+  app.quit();
+});
