@@ -9,6 +9,7 @@ const App = () => {
     const {
         loading,
         transactions,
+        categories,
         createTransaction,
         calculateBalance
     } = useTransaction();
@@ -41,7 +42,7 @@ const App = () => {
                     <p>Carregando transações...</p>
                 </div>
             ) : (
-                <TransactionsTable transactions={transactions} />
+                    <TransactionsTable transactions={transactions} categories={categories} />
             )}
 
             {isFormOpen && (
