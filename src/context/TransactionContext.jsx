@@ -15,9 +15,7 @@ export const TransactionProvider = ({ children }) => {
 
     const fetchTransactions = async (year) => {
         try {
-          console.log('Buscando transações para o ano:', year); // Debug
-          const data = await window.api.getTransactionsByYear(year);
-          console.log('Dados recebidos:', data); // Debug
+          const data = await window.api.getTransactionsByYear(year);       
           setTransactions(data);
         } catch (error) {
           console.error('Erro ao buscar transações:', error);
@@ -86,11 +84,6 @@ export const TransactionProvider = ({ children }) => {
         };
         loadData();
     }, [currentYear]);
-
-    useEffect(() => {
-        console.log('currentYear:', currentYear)
-    }, [currentYear])
-
 
 
     return (
