@@ -8,21 +8,22 @@ export const TRANSACTION_TYPES = {
 };
 
 export const TransactionProvider = ({ children }) => {
+    const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
     const [transactions, setTransactions] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchTransactions = useCallback(async () => {
+    const fetchTransactions = async (year) => {
         try {
-            setLoading(true);
-            const result = await window.api.getTransactions();
-            setTransactions(result);
+          console.log('Buscando transações para o ano:', year); // Debug
+          const data = await window.api.getTransactionsByYear(year);
+          console.log('Dados recebidos:', data); // Debug
+          setTransactions(data);
         } catch (error) {
-            console.error('Erro ao buscar transações:', error);
-        } finally {
-            setLoading(false);
+          console.error('Erro ao buscar transações:', error);
         }
-    }, []);
+      };
+    
 
     const fetchCategories = useCallback(async () => {
         try {
@@ -36,14 +37,14 @@ export const TransactionProvider = ({ children }) => {
     const createTransaction = useCallback(async (data) => {
         try {
             const result = await window.api.createTransaction(data);
-            await fetchTransactions(); // Atualiza a lista após criar
+            await fetchTransactions(currentYear); // Corrija currentDate para currentYear
             return result;
         } catch (error) {
             console.error('Erro ao criar transação:', error);
             throw error;
         }
-    }, [fetchTransactions]);
-
+    }, [fetchTransactions, currentYear]); // Adicione currentYear às dependências
+    
     const createCategory = useCallback(async (name) => {
         try {
             const result = await window.api.createCategory(name);
@@ -54,12 +55,43 @@ export const TransactionProvider = ({ children }) => {
             throw error;
         }
     }, [fetchCategories]);
+   
+    const updatedTransaction = useCallback(async (id, data) => {
+        try {
+            const result = await window.api.updateTransaction(id, data);
+            await fetchTransactions(currentYear); 
+            return result;
+        } catch (error) {
+            console.error('Erro ao criar transação:', error);
+            throw error;
+        }
+    }, [fetchTransactions]);
 
-    // NOVO: Efeito para carregar dados iniciais
+    const handleYearChange = (direction) => {
+        const newYear = direction === 'next' 
+          ? currentYear + 1 
+          : currentYear - 1;
+        setCurrentYear(newYear);
+      };
+
+      useEffect(() => {
+        const loadData = async () => {
+            setLoading(true);
+            try {
+                await fetchTransactions(currentYear);
+                await fetchCategories();
+            } finally {
+                setLoading(false);
+            }
+        };
+        loadData();
+    }, [currentYear]);
+
     useEffect(() => {
-        fetchTransactions();
-        fetchCategories();
-    }, [fetchTransactions, fetchCategories]);
+        console.log('currentYear:', currentYear)
+    }, [currentYear])
+
+
 
     return (
         <TransactionContext.Provider value={{
@@ -70,12 +102,17 @@ export const TransactionProvider = ({ children }) => {
             fetchCategories,
             createTransaction,
             createCategory,
+            updatedTransaction,
+            currentYear,
+            handleYearChange,
             TRANSACTION_TYPES
         }}>
             {children}
         </TransactionContext.Provider>
     );
 };
+
+
 
 export const useTransaction = () => {
     const context = useContext(TransactionContext);

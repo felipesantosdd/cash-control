@@ -30,6 +30,29 @@ class TransactionService {
     }
   }
 
+  async getTransactionsByYear(year = new Date().getFullYear()) {
+    try {
+      const transactions = await Transaction.getByYear(year);
+      return transactions;
+    } catch (error) {
+      throw new Error(`Erro ao buscar transações: ${error.message}`);
+    }
+  }
+
+  async updateTransaction(id, transactionData) {
+    try {
+      const updatedTransaction = await Transaction.update(id, transactionData);
+      
+      if (!updatedTransaction) {
+        throw new Error('Transação não encontrada');
+      }
+  
+      return updatedTransaction;
+    } catch (error) {
+      throw new Error(`Erro ao atualizar transação: ${error.message}`);
+    }
+  }
+
   async getTransactionById(id) {
     try {
       const transaction = await Transaction.findById(id);

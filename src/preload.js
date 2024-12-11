@@ -9,6 +9,9 @@ contextBridge.exposeInMainWorld('api', {
   // Transações
   createTransaction: (data) => ipcRenderer.invoke('create-transaction', data),
   getTransactions: () => ipcRenderer.invoke('get-transactions'),
+  getTransactionById: () => ipcRenderer.invoke('get-transaction-by-id', id),
+  updateTransaction: (id, data) => ipcRenderer.invoke('update-transaction', id, data),
+  getTransactionsByYear: (year) => ipcRenderer.invoke('get-transactions-by-year', year)
 });
 
 window.addEventListener('DOMContentLoaded', () => {

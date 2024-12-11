@@ -6,12 +6,13 @@ import { useTransaction } from '../context/TransactionContext';
 
 const App = () => {
     const [isFormOpen, setIsFormOpen] = useState(false);
+
     const {
         loading,
         transactions,
         categories,
         createTransaction,
-        calculateBalance
+
     } = useTransaction();
         
 

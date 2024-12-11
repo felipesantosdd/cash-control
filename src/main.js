@@ -41,12 +41,32 @@ ipcMain.handle('create-transaction', async (_, data) => {
   }
 });
 
+ipcMain.handle('update-transaction', async (event, id, data) => {
+  try {
+    const result = await transactionService.updateTransaction(id, data);
+    return result;
+  } catch (error) {
+    console.error('Erro ao atualizar transação:', error);
+    throw error;
+  }
+});
+
 ipcMain.handle('get-transactions', async () => {
   try {
     const transactions = await transactionService.getAllTransactions();
     return transactions;
   } catch (error) {
     console.error('Erro ao buscar transações:', error);
+    throw error;
+  }
+});
+
+ipcMain.handle('get-transaction-by-id', async (_, id) => {
+  try {
+    const transactions = await transactionService.getTransactionById();
+    return transactions;
+  } catch (error) {
+    console.error('Erro ao buscar transação:', error);
     throw error;
   }
 });
@@ -80,6 +100,17 @@ const initializeApp = async () => {
     app.quit();
   }
 };
+
+ipcMain.handle('get-transactions-by-year', async (_, year) => {
+  try {
+    console.log('Buscando transações do ano:', year); // Debug
+    const transactions = await transactionService.getTransactionsByYear(year);
+    return transactions;
+  } catch (error) {
+    console.error('Erro ao buscar transações:', error);
+    throw error;
+  }
+});
 
 app.whenReady().then(initializeApp);
 
