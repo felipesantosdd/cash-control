@@ -36,17 +36,17 @@ const theme = createTheme({
   },
 });
 
-const TransactionForm = ({ onClose, onSubmit }) => {
+const TransactionForm = ({ onClose, onSubmit, initialData }) => {
   const { TRANSACTION_TYPES, categories, fetchCategories, createCategory } =
     useTransaction();
 
   const [formData, setFormData] = useState({
-    valor: 0,
-    tipo: "saida",
-    category_id: "",
-    comentario: "",
-    maturity: null,
-    pay: false,
+    valor: initialData?.valor || 0,
+    tipo: initialData?.tipo || "saida",
+    category_id: initialData?.category_id || "",
+    comentario: initialData?.comentario || "",
+    maturity: initialData?.maturity || null,
+    pay: initialData?.pay || false,
   });
 
   const [newCategory, setNewCategory] = useState("");
@@ -172,7 +172,10 @@ const TransactionForm = ({ onClose, onSubmit }) => {
     }
 
     if (!hasErrors) {
-      onSubmit(formData);
+      onSubmit({
+        ...formData,
+        id: initialData?.id, // Passa o ID se estiver editando
+      });
     }
   };
 

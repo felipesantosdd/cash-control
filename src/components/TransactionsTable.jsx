@@ -3,6 +3,7 @@ import { capitalizeText } from "../utils/stringUtils";
 import { Switch, Fab } from "@mui/material";
 import { useTransaction } from "../context/TransactionContext";
 import AddIcon from "@mui/icons-material/Add";
+import TransactionForm from "./TransactionForm";
 
 const MONTHS = [
   "Janeiro",
@@ -22,6 +23,7 @@ const MONTHS = [
 const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
   const [openMonth, setOpenMonth] = useState(null);
   const [openCategories, setOpenCategories] = useState(new Set());
+  const [editingTransaction, setEditingTransaction] = useState(null);
   const { updatedTransaction, currentYear, handleYearChange } =
     useTransaction();
 
@@ -56,6 +58,19 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
   }, [transactions]);
 
   const totalBalance = monthlyBalances.reduce((acc, curr) => acc + curr, 0);
+
+  const handleRowClick = (transaction) => {
+    setEditingTransaction(transaction);
+  };
+
+  const handleEditSubmit = async (editedData) => {
+    try {
+      await updatedTransaction(editedData.id, editedData);
+      setEditingTransaction(null);
+    } catch (error) {
+      console.error("Erro ao atualizar transação:", error);
+    }
+  };
 
   const getBalanceClass = (value) => {
     return value > 0
@@ -218,6 +233,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                           <tr
                             key={transaction.id}
                             className={`border-t border-[#B9042C] ${className}`}
+                            onClick={() => handleRowClick(transaction)}
                           >
                             <td className="p-2 text-[#B9042C]">
                               {capitalizeText(transaction.tipo)}
@@ -349,6 +365,14 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
             </tbody>
           </table>
         </div>
+      )}
+
+      {editingTransaction && (
+        <TransactionForm
+          initialData={editingTransaction}
+          onClose={() => setEditingTransaction(null)}
+          onSubmit={handleEditSubmit}
+        />
       )}
     </div>
   );
