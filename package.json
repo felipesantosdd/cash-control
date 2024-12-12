@@ -1,9 +1,9 @@
 {
-  "name": "my-electron-app",
+  "name": "cash-control",
   "version": "1.0.0",
   "description": "Hello World!",
   "main": "./src/main.js",
-  "author": "Jane Doe",
+  "author": "Felipe S. Oliver",
   "license": "MIT",
   "scripts": {
     "start": "electron .",
