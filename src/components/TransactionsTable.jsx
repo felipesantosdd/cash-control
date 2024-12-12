@@ -24,6 +24,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
   const [openMonth, setOpenMonth] = useState(null);
   const [openCategories, setOpenCategories] = useState(new Set());
   const [editingTransaction, setEditingTransaction] = useState(null);
+  const [sortDirection, setSortDirection] = useState("desc");
   const { updatedTransaction, currentYear, handleYearChange } =
     useTransaction();
 
@@ -37,7 +38,12 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
       maximumFractionDigits: 2,
     }).format(numero);
   };
-
+  const getSortedTransactions = (transactions) => {
+    return [...transactions].sort((a, b) => {
+      const comparison = Number(b.valor) - Number(a.valor);
+      return sortDirection === "desc" ? comparison : -comparison;
+    });
+  };
   // Cálculo do balanço mensal
   const monthlyBalances = useMemo(() => {
     const balances = Array(12).fill(0);
@@ -133,6 +139,13 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
         monthlyTransactions[month].push(transaction);
       });
 
+      monthlyTransactions.forEach((transactions, index) => {
+        transactions.sort((a, b) => {
+          const comparison = Number(b.valor) - Number(a.valor);
+          return sortDirection === "desc" ? comparison : -comparison;
+        });
+      });
+
       const yearTotal = monthlyValues.reduce((acc, curr) => acc + curr, 0);
 
       return {
@@ -162,6 +175,10 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
       }
       setOpenCategories(newOpenCategories);
     }
+  };
+
+  const toggleSortDirection = () => {
+    setSortDirection((prev) => (prev === "desc" ? "asc" : "desc"));
   };
 
   const Row = ({ row }) => {
@@ -221,7 +238,12 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                     <thead>
                       <tr className="text-left">
                         <th className="p-2 text-[#B9042C]">Tipo</th>
-                        <th className="p-2 text-[#B9042C]">Valor</th>
+                        <th
+                          className="p-2 text-[#B9042C] cursor-pointer"
+                          onClick={toggleSortDirection}
+                        >
+                          Valor {sortDirection === "desc" ? "↓" : "↑"}
+                        </th>
                         <th className="p-2 text-[#B9042C]">Comentário</th>
                         <th className="p-2 text-[#B9042C]">Status</th>
                         <th className="p-2 text-[#B9042C]">Vencimento</th>
@@ -229,7 +251,9 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                       </tr>
                     </thead>
                     <tbody>
-                      {row.monthlyTransactions[openMonth].map((transaction) => {
+                      {getSortedTransactions(
+                        row.monthlyTransactions[openMonth]
+                      ).map((transaction) => {
                         const { className, status } =
                           getTransactionStatus(transaction);
                         return (
