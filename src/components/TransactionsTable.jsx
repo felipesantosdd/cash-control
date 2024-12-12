@@ -59,7 +59,10 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
 
   const totalBalance = monthlyBalances.reduce((acc, curr) => acc + curr, 0);
 
-  const handleRowClick = (transaction) => {
+  const handleRowClick = (event, transaction) => {
+    if (event.target.closest(".switch-container")) {
+      return;
+    }
     setEditingTransaction(transaction);
   };
 
@@ -94,20 +97,20 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
 
     if (transaction.pay) {
       return {
-        className: "bg-green-100",
+        className: "bg-[#1A2433] text-[#28A44B]",
         status: "Pago",
       };
     }
 
     if (maturityDate < now) {
       return {
-        className: "bg-red-100",
+        className: "bg-[#2D1619] text-[#A0062D]",
         status: "Atrasado",
       };
     }
 
     return {
-      className: "bg-gray-50",
+      className: "bg-[#1F1D2C] text-[#38BDF8]",
       status: "Pendente",
     };
   };
@@ -232,34 +235,36 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                         return (
                           <tr
                             key={transaction.id}
-                            className={`border-t border-[#B9042C] ${className}`}
-                            onClick={() => handleRowClick(transaction)}
+                            className={`border-t border-[#B9042C] ${className} cursor-pointer`}
+                            onClick={(e) => handleRowClick(e, transaction)}
                           >
-                            <td className="p-2 text-[#B9042C]">
+                            <td className={`p-2`}>
                               {capitalizeText(transaction.tipo)}
                             </td>
-                            <td className="p-2 text-[#B9042C]">
+                            <td className={`p-2`}>
                               R$ {Number(transaction.valor)}
                             </td>
-                            <td className="p-2 text-[#B9042C]">
+                            <td className={`p-2`}>
                               {transaction.comentario || "Sem comentário"}
                             </td>
-                            <td className="p-2 text-[#B9042C]">{status}</td>
-                            <td className="p-2 text-[#B9042C]">
+                            <td className={`p-2`}>{status}</td>
+                            <td className={`p-2`}>
                               {new Date(
                                 transaction.maturity
                               ).toLocaleDateString("pt-BR")}
                             </td>
-                            <td className="p-2 text-[#B9042C]">
-                              <Switch
-                                checked={transaction.pay}
-                                onChange={(e) =>
-                                  handlePaymentUpdate(
-                                    transaction.id,
-                                    e.target.checked
-                                  )
-                                }
-                              />
+                            <td className={`p-2`}>
+                              <div className="switch-container">
+                                <Switch
+                                  checked={!!transaction.pay}
+                                  onChange={(e) =>
+                                    handlePaymentUpdate(
+                                      transaction.id,
+                                      e.target.checked
+                                    )
+                                  }
+                                />
+                              </div>
                             </td>
                           </tr>
                         );

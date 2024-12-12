@@ -142,8 +142,10 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+    if (e) {
+      e.preventDefault();
+    }
     let hasErrors = false;
 
     if (!formData.valor) {
@@ -172,10 +174,11 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
     }
 
     if (!hasErrors) {
-      onSubmit({
+      await onSubmit({
         ...formData,
         id: initialData?.id, // Passa o ID se estiver editando
       });
+      onClose();
     }
   };
 
@@ -543,8 +546,9 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
                 size="medium"
                 color="primary"
                 variant="outlined"
-                type="submit"
+                type="button"
                 className="bg-blue-500 text-[#A0052B]"
+                onClick={handleSubmit}
               >
                 Salvar
               </Button>
