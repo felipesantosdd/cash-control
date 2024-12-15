@@ -21,8 +21,13 @@ const MONTHS = [
   "Dezembro",
 ];
 
+const expand = {
+  transition: "all 0.3s ease-in-out;",
+};
+
 const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
   const [openMonth, setOpenMonth] = useState(null);
+  const [expandedMonths, setExpandedMonths] = useState(new Set());
   const [openCategories, setOpenCategories] = useState(new Set());
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [sortDirection, setSortDirection] = useState("desc");
@@ -43,6 +48,27 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
       maximumFractionDigits: 2,
     }).format(numero);
   };
+
+  const handleMonthClick = (monthIndex) => {
+    const newExpandedMonths = new Set(expandedMonths);
+    if (newExpandedMonths.has(monthIndex)) {
+      newExpandedMonths.delete(monthIndex);
+      setOpenMonth(null);
+      setOpenCategories(new Set());
+    } else {
+      newExpandedMonths.add(monthIndex);
+      setOpenMonth(monthIndex);
+      // Expande todas as categorias que têm transações neste mês
+      const categoriesToExpand = new Set(
+        groupedData
+          .filter((row) => row.monthlyTransactions[monthIndex].length > 0)
+          .map((row) => row.categoryName)
+      );
+      setOpenCategories(categoriesToExpand);
+    }
+    setExpandedMonths(newExpandedMonths);
+  };
+
   const getSortedTransactions = (transactions) => {
     return [...transactions].sort((a, b) => {
       const comparison = Number(b.valor) - Number(a.valor);
@@ -185,7 +211,10 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
 
   const Row = ({ row }) => {
     const isExpanded = (monthIndex) => {
-      return openMonth === monthIndex && openCategories.has(row.categoryName);
+      return (
+        openMonth === monthIndex &&
+        (openCategories.has(row.categoryName) || expandedMonths.has(monthIndex))
+      );
     };
 
     return (
@@ -390,9 +419,44 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
             <thead>
               <tr className="bg-[#1F1D2C] ">
                 <th className="p-4 text-[#B9042C] text-left">Categoria</th>
-                {MONTHS.map((month) => (
-                  <th key={month} className="p-4 text-[#B9042C]  text-right">
-                    {month}
+                {MONTHS.map((month, index) => (
+                  <th
+                    key={month}
+                    className="p-4 text-[#B9042C] text-right cursor-pointer hover:bg-[#2a2839]"
+                    onClick={() => handleMonthClick(index)}
+                  >
+                    <div className="flex items-center justify-end space-x-2">
+                      <span>{month}</span>
+                      {expandedMonths.has(index) ? (
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 15l7-7 7 7"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      )}
+                    </div>
                   </th>
                 ))}
                 <th className="p-4 text-[#B9042C] text-right">Total Anual</th>
