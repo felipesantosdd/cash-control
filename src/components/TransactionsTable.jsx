@@ -216,7 +216,27 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
 
   const Row = ({ row }) => {
     const isRecursos = row.categoryName === "Recursos";
-    const textColor = isRecursos ? "text-green-500" : "text-[#B9042C]";
+
+    // Função para determinar a cor do valor baseado no status das transações
+    const getValueColor = (transactions, value) => {
+      if (value === 0) return "text-[#E9E5E6]";
+
+      if (isRecursos) return "text-green-500";
+
+      if (transactions.length === 0) return "text-[#E9E5E6]";
+
+      const now = new Date();
+      const hasUnpaidOverdue = transactions.some((t) => {
+        const maturityDate = new Date(t.maturity);
+        return !t.pay && maturityDate < now;
+      });
+
+      const allPaid = transactions.every((t) => t.pay);
+
+      if (hasUnpaidOverdue) return "text-[#A0062D] font-bold"; // Vermelho para atrasadas
+      if (allPaid) return "text-[#28A44B]"; // Verde para todas pagas
+      return "text-[#E9E5E6]"; // Branco para pendentes não atrasadas
+    };
 
     const isExpanded = (monthIndex) => {
       return (
@@ -232,15 +252,27 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
             isRecursos ? "bg-opacity-90" : ""
           }`}
         >
-          <td className={`p-4 ${textColor} font-medium`}>{row.categoryName}</td>
+          <td className={`p-4 text-[#E9E5E6] font-medium`}>
+            {row.categoryName}
+          </td>
           {row.monthlyValues.map((value, index) => (
-            <td key={index} className={`p-4 ${textColor} text-right`}>
+            <td key={index} className={`p-4 text-right`}>
               {value > 0 ? (
                 <div className="flex items-center justify-end space-x-2">
-                  <span>R$ {formatarValorMonetario(value)}</span>
+                  <span
+                    className={getValueColor(
+                      row.monthlyTransactions[index],
+                      value
+                    )}
+                  >
+                    R$ {formatarValorMonetario(value)}
+                  </span>
                   <button
                     onClick={() => toggleCategory(index, row.categoryName)}
-                    className={`p-1 hover:bg-gray-100 rounded-full ${textColor}`}
+                    className={`p-1 hover:bg-gray-100 rounded-full ${getValueColor(
+                      row.monthlyTransactions[index],
+                      value
+                    )}`}
                   >
                     <svg
                       className={`w-4 h-4 transition-transform ${
@@ -264,7 +296,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
               )}
             </td>
           ))}
-          <td className="p-4 text-[#B9042C] text-right font-bold">
+          <td className="p-4 text-[#E9E5E6] text-right font-bold">
             R$ {formatarValorMonetario(row.yearTotal)}
           </td>
         </tr>
@@ -273,26 +305,26 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
           row.monthlyTransactions[openMonth].length > 0 && (
             <tr>
               <td colSpan={14} className="bg-[#1F1D2C]">
-                <div className="p-4 bg-slate-800 text-[#B9042C] ">
+                <div className="p-4 bg-slate-800 text-[#E9E5E6] ">
                   <h6 className="font-bold mb-4">
                     Transações de {MONTHS[openMonth]}
                   </h6>
                   <table className="w-full">
                     <thead>
                       <tr className="text-left">
-                        <th className="p-2 text-[#B9042C]">Tipo</th>
-                        <th className="p-2 text-[#B9042C]">Comentário</th>
+                        <th className="p-2 text-[#E9E5E6]">Tipo</th>
+                        <th className="p-2 text-[#E9E5E6]">Comentário</th>
                         <th
-                          className="p-2 text-[#B9042C] cursor-pointer"
+                          className="p-2 text-[#E9E5E6] cursor-pointer"
                           onClick={toggleSortDirection}
                         >
                           Valor {sortDirection === "desc" ? "↓" : "↑"}
                         </th>
 
-                        <th className="p-2 text-[#B9042C]">Status</th>
-                        <th className="p-2 text-[#B9042C]">Vencimento</th>
-                        <th className="p-2 text-[#B9042C]">Pago</th>
-                        <th className="p-2 text-[#B9042C] text-center  justify-center align-middle w-[100px]">
+                        <th className="p-2 text-[#E9E5E6]">Status</th>
+                        <th className="p-2 text-[#E9E5E6]">Vencimento</th>
+                        <th className="p-2 text-[#E9E5E6]">Pago</th>
+                        <th className="p-2 text-[#E9E5E6] text-center  justify-center align-middle w-[100px]">
                           Ação
                         </th>
                       </tr>
@@ -315,7 +347,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                               {transaction.comentario || "Sem comentário"}
                             </td>
                             <td className={`p-2`}>
-                              R$ {Number(transaction.valor)}
+                              {formatCurrency(Number(transaction.valor))}
                             </td>
                             <td className={`p-2`}>{status}</td>
                             <td className="p-2">
@@ -431,11 +463,11 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
           <table className="w-full border-collapse border-[#B9042C] bg-[#1F1D2C]">
             <thead>
               <tr className="bg-[#1F1D2C] ">
-                <th className="p-4 text-[#B9042C] text-left">Categoria</th>
+                <th className="p-4 text-[#E9E5E6] text-left">Categoria</th>
                 {MONTHS.map((month, index) => (
                   <th
                     key={month}
-                    className="p-4 text-[#B9042C] text-right cursor-pointer hover:bg-[#2a2839]"
+                    className="p-4 text-[#E9E5E6] text-right cursor-pointer hover:bg-[#2a2839]"
                     onClick={() => handleMonthClick(index)}
                   >
                     <div className="flex items-center justify-end space-x-2">
@@ -472,7 +504,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                     </div>
                   </th>
                 ))}
-                <th className="p-4 text-[#B9042C] text-right">Total Anual</th>
+                <th className="p-4 text-[#E9E5E6] text-right">Total Anual</th>
               </tr>
             </thead>
             <tbody>
@@ -481,19 +513,19 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
               ))}
               {/* Linha de separação */}
               <tr className="border-t-2 border-[#B9042C]">
-                <td colSpan={14} className="p-2 text-[#B9042C]"></td>
+                <td colSpan={14} className="p-2 text-[#E9E5E6]"></td>
               </tr>
               {/* Linha do balanço */}
               <tr className="bg-[#1F1D2C] font-medium">
-                <td className="p-4 text-[#B9042C] text-left">Balanço Mensal</td>
+                <td className="p-4 text-[#E9E5E6] text-left">Balanço Mensal</td>
                 {monthlyBalances.map((balance, index) => (
-                  <td key={index} className="p-4 text-[#B9042C] text-right">
+                  <td key={index} className="p-4 text-[#E9E5E6] text-right">
                     <span className={getBalanceClass(balance)}>
                       {formatCurrency(balance)}
                     </span>
                   </td>
                 ))}
-                <td className="p-4 text-[#B9042C] text-right font-bold">
+                <td className="p-4 text-[#E9E5E6] text-right font-bold">
                   <span className={getBalanceClass(totalBalance)}>
                     {formatCurrency(totalBalance)}
                   </span>

@@ -126,15 +126,14 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
         return;
       }
 
-      const userTimezone = dayjs.tz.guess();
-
+      // Cria uma nova data definindo a hora para 12:00 para evitar problemas com timezone
       const adjustedDate = dayjs(newValue)
-        .tz(userTimezone)
         .hour(12)
         .minute(0)
         .second(0)
         .millisecond(0);
 
+      // Formata a data para YYYY-MM-DD
       const formattedDate = adjustedDate.format("YYYY-MM-DD");
 
       setFormData((prev) => ({
