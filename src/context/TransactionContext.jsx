@@ -79,6 +79,20 @@ export const TransactionProvider = ({ children }) => {
     [fetchTransactions]
   );
 
+  const deleteTransaction = useCallback(
+    async (id) => {
+      try {
+        const result = await window.api.deleteTransaction(id);
+        await fetchTransactions(currentYear);
+        return result;
+      } catch (error) {
+        console.error("Erro ao deletar transação:", error);
+        throw error;
+      }
+    },
+    [fetchTransactions]
+  );
+
   const handleYearChange = (direction) => {
     const newYear = direction === "next" ? currentYear + 1 : currentYear - 1;
     setCurrentYear(newYear);
@@ -110,6 +124,7 @@ export const TransactionProvider = ({ children }) => {
         updatedTransaction,
         currentYear,
         handleYearChange,
+        deleteTransaction,
         TRANSACTION_TYPES,
       }}
     >

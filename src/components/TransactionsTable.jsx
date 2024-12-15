@@ -2,7 +2,8 @@ import React, { useState, useMemo } from "react";
 import { capitalizeText } from "../utils/stringUtils";
 import { Switch, Fab } from "@mui/material";
 import { useTransaction } from "../context/TransactionContext";
-import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import TransactionForm from "./TransactionForm";
 
 const MONTHS = [
@@ -25,8 +26,12 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
   const [openCategories, setOpenCategories] = useState(new Set());
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [sortDirection, setSortDirection] = useState("desc");
-  const { updatedTransaction, currentYear, handleYearChange } =
-    useTransaction();
+  const {
+    updatedTransaction,
+    currentYear,
+    handleYearChange,
+    deleteTransaction,
+  } = useTransaction();
 
   const formatarValorMonetario = (valor) => {
     const numero = Number(valor);
@@ -64,13 +69,6 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
   }, [transactions]);
 
   const totalBalance = monthlyBalances.reduce((acc, curr) => acc + curr, 0);
-
-  const handleRowClick = (event, transaction) => {
-    if (event.target.closest(".switch-container")) {
-      return;
-    }
-    setEditingTransaction(transaction);
-  };
 
   const handleEditSubmit = async (editedData) => {
     try {
@@ -248,6 +246,9 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                         <th className="p-2 text-[#B9042C]">Status</th>
                         <th className="p-2 text-[#B9042C]">Vencimento</th>
                         <th className="p-2 text-[#B9042C]">Pago</th>
+                        <th className="p-2 text-[#B9042C] text-center  justify-center align-middle w-[100px]">
+                          Ação
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -259,8 +260,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                         return (
                           <tr
                             key={transaction.id}
-                            className={`border-t border-[#B9042C] ${className} cursor-pointer`}
-                            onClick={(e) => handleRowClick(e, transaction)}
+                            className={`border-t border-[#B9042C] ${className}`}
                           >
                             <td className={`p-2`}>
                               {capitalizeText(transaction.tipo)}
@@ -286,6 +286,32 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                                       transaction.id,
                                       e.target.checked
                                     )
+                                  }
+                                />
+                              </div>
+                            </td>
+                            <td
+                              className={`p-1 flex justify-center items-center  w-[100px] h-[50px] `}
+                            >
+                              <div className="delete-container">
+                                <DeleteIcon
+                                  style={{
+                                    margin: "0 10px",
+                                    cursor: "pointer",
+                                  }}
+                                  color="error"
+                                  onClick={() =>
+                                    deleteTransaction(transaction.id)
+                                  }
+                                />
+                                <EditIcon
+                                  style={{
+                                    margin: "0 10px",
+                                    cursor: "pointer",
+                                  }}
+                                  color="error"
+                                  onClick={() =>
+                                    setEditingTransaction(transaction)
                                   }
                                 />
                               </div>

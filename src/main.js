@@ -7,7 +7,7 @@ const transactionService = require("./backend/services/transactionService");
 try {
   require("electron-reloader")(module, {
     debug: false,
-    watchRenderer: false,
+    watchRenderer: true,
   });
 } catch (_) {
   console.log("Error");
@@ -66,6 +66,16 @@ ipcMain.handle("get-transaction-by-id", async (_, id) => {
     return transactions;
   } catch (error) {
     console.error("Erro ao buscar transação:", error);
+    throw error;
+  }
+});
+
+ipcMain.handle("delete-transaction", async (_, id) => {
+  try {
+    await transactionService.deleteTransactionById(id);
+    return;
+  } catch (error) {
+    console.error("Erro ao deletar transação:", error);
     throw error;
   }
 });

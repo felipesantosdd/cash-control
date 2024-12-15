@@ -72,6 +72,20 @@ class Transaction {
     });
   }
 
+  static async delete(id) {
+    const db = await getDatabase();
+    return new Promise((resolve, reject) => {
+      db.run("DELETE FROM transactions WHERE id = ?", [id], function (err) {
+        if (err) {
+          reject(err);
+        } else {
+          // retorna o número de linhas afetadas
+          resolve({ changes: this.changes });
+        }
+      });
+    });
+  }
+
   static async update(id, transactionData) {
     const db = await getDatabase();
 
