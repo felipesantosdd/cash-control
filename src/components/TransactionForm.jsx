@@ -112,7 +112,6 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
 
   const handleChangeDate = (newValue) => {
     try {
-      // Verifica se é uma data válida
       if (!newValue || !newValue.isValid()) {
         setFormData((prev) => ({
           ...prev,
@@ -121,8 +120,12 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
         return;
       }
 
-      // Formata a data para ISO string com timezone local
-      const formattedDate = newValue.format("YYYY-MM-DDTHH:mm:ss.SSS[Z]");
+      const localDate = dayjs(newValue)
+        .tz(dayjs.tz.guess())
+        .startOf("day")
+        .add(12, "hour");
+
+      const formattedDate = localDate.format("YYYY-MM-DD");
 
       setFormData((prev) => ({
         ...prev,
