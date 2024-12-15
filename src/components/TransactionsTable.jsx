@@ -261,7 +261,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
           row.monthlyTransactions[openMonth].length > 0 && (
             <tr>
               <td colSpan={14} className="bg-[#1F1D2C]">
-                <div className="p-4 text-[#B9042C] ">
+                <div className="p-4 bg-slate-800 text-[#B9042C] ">
                   <h6 className="font-bold mb-4">
                     Transações de {MONTHS[openMonth]}
                   </h6>
