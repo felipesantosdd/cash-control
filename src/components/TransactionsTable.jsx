@@ -307,7 +307,9 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
               <td colSpan={14} className="bg-[#1F1D2C]">
                 <div className="p-4 bg-slate-800 text-[#E9E5E6] ">
                   <h6 className="font-bold mb-4">
-                    Transações de {MONTHS[openMonth]}
+                    {row.categoryName === "Recursos"
+                      ? `${row.categoryName} obtidos em  ${MONTHS[openMonth]}`
+                      : `Gastos de ${MONTHS[openMonth]} com ${row.categoryName}`}
                   </h6>
                   <table className="w-full">
                     <thead>
