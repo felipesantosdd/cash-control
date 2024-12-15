@@ -269,13 +269,14 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                     <thead>
                       <tr className="text-left">
                         <th className="p-2 text-[#B9042C]">Tipo</th>
+                        <th className="p-2 text-[#B9042C]">Comentário</th>
                         <th
                           className="p-2 text-[#B9042C] cursor-pointer"
                           onClick={toggleSortDirection}
                         >
                           Valor {sortDirection === "desc" ? "↓" : "↑"}
                         </th>
-                        <th className="p-2 text-[#B9042C]">Comentário</th>
+
                         <th className="p-2 text-[#B9042C]">Status</th>
                         <th className="p-2 text-[#B9042C]">Vencimento</th>
                         <th className="p-2 text-[#B9042C]">Pago</th>
@@ -299,10 +300,10 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                               {capitalizeText(transaction.tipo)}
                             </td>
                             <td className={`p-2`}>
-                              R$ {Number(transaction.valor)}
+                              {transaction.comentario || "Sem comentário"}
                             </td>
                             <td className={`p-2`}>
-                              {transaction.comentario || "Sem comentário"}
+                              R$ {Number(transaction.valor)}
                             </td>
                             <td className={`p-2`}>{status}</td>
                             <td className="p-2">
