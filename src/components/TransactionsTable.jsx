@@ -184,8 +184,13 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
       };
     });
 
-    return result || [];
-  }, [transactions, categories]);
+    // Ordenar para que "Recursos" sempre apareça primeiro
+    return (result || []).sort((a, b) => {
+      if (a.categoryName === "Recursos") return -1;
+      if (b.categoryName === "Recursos") return 1;
+      return a.categoryName.localeCompare(b.categoryName);
+    });
+  }, [transactions, categories, sortDirection]);
 
   const toggleCategory = (monthIndex, categoryName) => {
     if (openMonth !== monthIndex) {
@@ -210,6 +215,9 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
   };
 
   const Row = ({ row }) => {
+    const isRecursos = row.categoryName === "Recursos";
+    const textColor = isRecursos ? "text-green-500" : "text-[#B9042C]";
+
     const isExpanded = (monthIndex) => {
       return (
         openMonth === monthIndex &&
@@ -219,16 +227,20 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
 
     return (
       <>
-        <tr className="border-b bg-[#1F1D2C]">
-          <td className="p-4 text-[#B9042C] font-medium">{row.categoryName}</td>
+        <tr
+          className={`border-b bg-[#1F1D2C] ${
+            isRecursos ? "bg-opacity-90" : ""
+          }`}
+        >
+          <td className={`p-4 ${textColor} font-medium`}>{row.categoryName}</td>
           {row.monthlyValues.map((value, index) => (
-            <td key={index} className="p-4 text-[#B9042C] text-right">
+            <td key={index} className={`p-4 ${textColor} text-right`}>
               {value > 0 ? (
                 <div className="flex items-center justify-end space-x-2">
                   <span>R$ {formatarValorMonetario(value)}</span>
                   <button
                     onClick={() => toggleCategory(index, row.categoryName)}
-                    className="p-1 hover:bg-gray-100 rounded-full"
+                    className={`p-1 hover:bg-gray-100 rounded-full ${textColor}`}
                   >
                     <svg
                       className={`w-4 h-4 transition-transform ${
