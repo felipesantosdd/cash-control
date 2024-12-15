@@ -16,6 +16,8 @@ import {
   FormHelperText,
 } from "@mui/material";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 const theme = createTheme({
   components: {
@@ -35,6 +37,9 @@ const theme = createTheme({
     },
   },
 });
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const TransactionForm = ({ onClose, onSubmit, initialData }) => {
   const { TRANSACTION_TYPES, categories, fetchCategories, createCategory } =
@@ -112,6 +117,7 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
 
   const handleChangeDate = (newValue) => {
     try {
+      // Verifica se é uma data válida
       if (!newValue || !newValue.isValid()) {
         setFormData((prev) => ({
           ...prev,
@@ -120,12 +126,16 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
         return;
       }
 
-      const localDate = dayjs(newValue)
-        .tz(dayjs.tz.guess())
-        .startOf("day")
-        .add(12, "hour");
+      const userTimezone = dayjs.tz.guess();
 
-      const formattedDate = localDate.format("YYYY-MM-DD");
+      const adjustedDate = dayjs(newValue)
+        .tz(userTimezone)
+        .hour(12)
+        .minute(0)
+        .second(0)
+        .millisecond(0);
+
+      const formattedDate = adjustedDate.format("YYYY-MM-DD");
 
       setFormData((prev) => ({
         ...prev,

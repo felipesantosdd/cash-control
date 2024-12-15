@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { capitalizeText } from "../utils/stringUtils";
 import { Switch, Fab } from "@mui/material";
 import { useTransaction } from "../context/TransactionContext";
@@ -86,6 +86,10 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
       ? "text-red-600"
       : "text-gray-500";
   };
+
+  useEffect(() => {
+    console.log(editingTransaction);
+  }, [editingTransaction]);
 
   const formatCurrency = (value) => {
     return value === 0 ? "-" : `R$ ${formatarValorMonetario(value)}`;
@@ -192,6 +196,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
             <td key={index} className="p-4 text-[#B9042C] text-right">
               {value > 0 ? (
                 <div className="flex items-center justify-end space-x-2">
+                  <span>R$ {formatarValorMonetario(value)}</span>
                   <button
                     onClick={() => toggleCategory(index, row.categoryName)}
                     className="p-1 hover:bg-gray-100 rounded-full"
@@ -212,7 +217,6 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                       />
                     </svg>
                   </button>
-                  <span>R$ {formatarValorMonetario(value)}</span>
                 </div>
               ) : (
                 "-"
@@ -272,9 +276,10 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                               {transaction.comentario || "Sem comentário"}
                             </td>
                             <td className={`p-2`}>{status}</td>
-                            <td className={`p-2`}>
+                            <td className="p-2">
                               {new Date(
-                                transaction.maturity
+                                Date.parse(transaction.maturity) +
+                                  12 * 60 * 60 * 1000
                               ).toLocaleDateString("pt-BR")}
                             </td>
                             <td className={`p-2`}>
