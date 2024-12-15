@@ -292,7 +292,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                   </button>
                 </div>
               ) : (
-                "-"
+                <span className="text-[#E9E5E6]">-</span>
               )}
             </td>
           ))}
