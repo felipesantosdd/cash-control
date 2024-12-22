@@ -80,14 +80,11 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
     const { name, value } = e.target;
 
     if (name === "valor") {
-      // Remove qualquer caractere que não seja número ou vírgula
       const sanitizedValue = value.replace(/[^\d,]/g, "");
 
-      // Garante que só exista uma vírgula
       const parts = sanitizedValue.split(",");
       let formattedValue = parts[0];
       if (parts.length > 1) {
-        // Limita a 2 casas decimais
         formattedValue += "," + parts[1].slice(0, 2);
       }
 
@@ -107,7 +104,6 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
       }));
     }
 
-    // Limpa o erro do campo se ele for preenchido
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -118,7 +114,6 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
 
   const handleChangeDate = (newValue) => {
     try {
-      // Verifica se é uma data válida
       if (!newValue || !newValue.isValid()) {
         setFormData((prev) => ({
           ...prev,
@@ -127,14 +122,12 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
         return;
       }
 
-      // Cria uma nova data definindo a hora para 12:00 para evitar problemas com timezone
       const adjustedDate = dayjs(newValue)
         .hour(12)
         .minute(0)
         .second(0)
         .millisecond(0);
 
-      // Formata a data para YYYY-MM-DD
       const formattedDate = adjustedDate.format("YYYY-MM-DD");
 
       setFormData((prev) => ({
@@ -189,9 +182,73 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
     if (!hasErrors) {
       await onSubmit({
         ...formData,
-        id: initialData?.id, // Passa o ID se estiver editando
+        id: initialData?.id,
       });
       onClose();
+    }
+  };
+
+  const handleSubmitAndContinue = async (e) => {
+    if (e) {
+      e.preventDefault();
+    }
+    let hasErrors = false;
+
+    if (!formData.valor) {
+      setErrors((prev) => ({ ...prev, valor: true }));
+      hasErrors = true;
+    }
+
+    if (!formData.tipo) {
+      setErrors((prev) => ({ ...prev, tipo: true }));
+      hasErrors = true;
+    }
+
+    if (!formData.category_id) {
+      setErrors((prev) => ({ ...prev, category_id: true }));
+      hasErrors = true;
+    }
+
+    if (!formData.comentario.trim()) {
+      setErrors((prev) => ({ ...prev, comentario: true }));
+      hasErrors = true;
+    }
+
+    if (!formData.maturity) {
+      setErrors((prev) => ({ ...prev, maturity: true }));
+      hasErrors = true;
+    }
+
+    if (!hasErrors) {
+      try {
+        const currentDate = formData.maturity;
+        const currentType = formData.tipo;
+        const currentCategory = formData.category_id;
+
+        await onSubmit({
+          ...formData,
+          id: initialData?.id,
+        });
+
+        setFormData({
+          valor: 0,
+          tipo: currentType,
+          category_id: currentCategory,
+          comentario: "",
+          maturity: currentDate,
+          pay: false,
+        });
+
+        setErrors({
+          valor: false,
+          tipo: false,
+          category_id: false,
+          comentario: false,
+          maturity: false,
+        });
+      } catch (error) {
+        console.error("Erro ao salvar transação:", error);
+      }
     }
   };
 
@@ -235,15 +292,15 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
                 <FormControl fullWidth>
                   <InputLabel
                     sx={{
-                      color: "#A00935 !important", // Cor padrão
+                      color: "#A00935 !important",
                       "&.Mui-focused": {
-                        color: "#A00935 !important", // Cor quando focado
+                        color: "#A00935 !important",
                       },
                       "&.MuiInputLabel-shrink": {
-                        color: "#A00935 !important", // Cor quando encolhido
+                        color: "#A00935 !important",
                       },
                       "&.Mui-disabled": {
-                        color: "#A00935 !important", // Cor quando desabilitado
+                        color: "#A00935 !important",
                       },
                     }}
                     id="category-select-label"
@@ -281,8 +338,8 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
                       "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                         borderColor: "#A00935",
                       },
-                      "& .MuiSvgIcon-root": { color: "#A00935" }, // Cor do ícone de seta
-                      "& .MuiSelect-select": { color: "white" }, // Cor do texto selecionado
+                      "& .MuiSvgIcon-root": { color: "#A00935" },
+                      "& .MuiSelect-select": { color: "white" },
                     }}
                   >
                     {categories.map((cat) => (
@@ -328,13 +385,13 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
                     sx={{
-                      "& .MuiInputLabel-root": { color: "#B9042C" }, // Cor do label
-                      "& .MuiInputLabel-root.Mui-focused": { color: "#B9042C" }, // Cor do label quando focado
+                      "& .MuiInputLabel-root": { color: "#B9042C" },
+                      "& .MuiInputLabel-root.Mui-focused": { color: "#B9042C" },
                       "& .MuiOutlinedInput-root": {
-                        "& fieldset": { borderColor: "#B9042C" }, // Cor da borda
-                        "&:hover fieldset": { borderColor: "#B9042C" }, // Cor da borda ao hover
-                        "&.Mui-focused fieldset": { borderColor: "#B9042C" }, // Cor da borda quando focado
-                        "& input": { color: "white" }, // Cor do texto digitado
+                        "& fieldset": { borderColor: "#B9042C" },
+                        "&:hover fieldset": { borderColor: "#B9042C" },
+                        "&.Mui-focused fieldset": { borderColor: "#B9042C" },
+                        "& input": { color: "white" },
                       },
                     }}
                   />
@@ -374,10 +431,8 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
                 type="text"
                 value={formatarValorMonetario(formData.valor)}
                 onChange={(e) => {
-                  // Pega apenas os números do valor digitado
                   const numbers = e.target.value.replace(/[^\d]/g, "");
 
-                  // Converte para número decimal
                   const valorNumerico = numbers ? parseFloat(numbers) / 100 : 0;
 
                   setFormData((prev) => ({
@@ -415,15 +470,15 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
             <FormControl fullWidth style={{ margin: "10px 0" }}>
               <InputLabel
                 sx={{
-                  color: "#A00935 !important", // Cor padrão
+                  color: "#A00935 !important",
                   "&.Mui-focused": {
-                    color: "#A00935 !important", // Cor quando focado
+                    color: "#A00935 !important",
                   },
                   "&.MuiInputLabel-shrink": {
-                    color: "#A00935 !important", // Cor quando encolhido
+                    color: "#A00935 !important",
                   },
                   "&.Mui-disabled": {
-                    color: "#A00935 !important", // Cor quando desabilitado
+                    color: "#A00935 !important",
                   },
                 }}
                 id="tipo-select-label"
@@ -461,8 +516,8 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
                   "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
                     borderColor: "#A00935",
                   },
-                  "& .MuiSvgIcon-root": { color: "#A00935" }, // Cor do ícone de seta
-                  "& .MuiSelect-select": { color: "white" }, // Cor do texto selecionado
+                  "& .MuiSvgIcon-root": { color: "#A00935" },
+                  "& .MuiSelect-select": { color: "white" },
                 }}
               >
                 <MenuItem
@@ -508,13 +563,13 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
                 value={formData.comentario}
                 onChange={handleChange}
                 sx={{
-                  "& .MuiInputLabel-root": { color: "#B9042C" }, // Cor do label
-                  "& .MuiInputLabel-root.Mui-focused": { color: "#B9042C" }, // Cor do label quando focado
+                  "& .MuiInputLabel-root": { color: "#B9042C" },
+                  "& .MuiInputLabel-root.Mui-focused": { color: "#B9042C" },
                   "& .MuiOutlinedInput-root": {
-                    "& fieldset": { borderColor: "#B9042C" }, // Cor da borda
-                    "&:hover fieldset": { borderColor: "#B9042C" }, // Cor da borda ao hover
-                    "&.Mui-focused fieldset": { borderColor: "#B9042C" }, // Cor da borda quando focado
-                    "& input": { color: "white" }, // Cor do texto digitado
+                    "& fieldset": { borderColor: "#B9042C" },
+                    "&:hover fieldset": { borderColor: "#B9042C" },
+                    "&.Mui-focused fieldset": { borderColor: "#B9042C" },
+                    "& input": { color: "white" },
                   },
                 }}
               />
@@ -554,6 +609,16 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
                 className="bg-gray-200"
               >
                 Cancelar
+              </Button>
+              <Button
+                size="medium"
+                color="primary"
+                variant="outlined"
+                type="button"
+                className="bg-blue-500 text-[#A0052B]"
+                onClick={handleSubmitAndContinue}
+              >
+                Salvar e Continuar
               </Button>
               <Button
                 size="medium"

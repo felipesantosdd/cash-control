@@ -39,7 +39,6 @@ const CloneTransactionsForm = ({ open, onClose, onSubmit, transactions }) => {
     date: false,
   });
 
-  // Computar meses que têm transações
   const availableMonths = useMemo(() => {
     const months = new Set();
     transactions.forEach((transaction) => {

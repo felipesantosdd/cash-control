@@ -62,7 +62,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
     } else {
       newExpandedMonths.add(monthIndex);
       setOpenMonth(monthIndex);
-      // Expande todas as categorias que têm transações neste mês
+
       const categoriesToExpand = new Set(
         groupedData
           .filter((row) => row.monthlyTransactions[monthIndex].length > 0)
@@ -79,7 +79,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
       return sortDirection === "desc" ? comparison : -comparison;
     });
   };
-  // Cálculo do balanço mensal
+
   const monthlyBalances = useMemo(() => {
     const balances = Array(12).fill(0);
 
@@ -188,7 +188,6 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
       };
     });
 
-    // Ordenar para que "Recursos" sempre apareça primeiro
     return (result || []).sort((a, b) => {
       if (a.categoryName === "Recursos") return -1;
       if (b.categoryName === "Recursos") return 1;
@@ -221,7 +220,6 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
   const Row = ({ row }) => {
     const isRecursos = row.categoryName === "Recursos";
 
-    // Função para determinar a cor do valor baseado no status das transações
     const getValueColor = (transactions, value) => {
       if (value === 0) return "text-[#E9E5E6]";
 
@@ -237,9 +235,9 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
 
       const allPaid = transactions.every((t) => t.pay);
 
-      if (hasUnpaidOverdue) return "text-[#A0062D] font-bold"; // Vermelho para atrasadas
-      if (allPaid) return "text-[#28A44B]"; // Verde para todas pagas
-      return "text-[#E9E5E6]"; // Branco para pendentes não atrasadas
+      if (hasUnpaidOverdue) return "text-[#A0062D] font-bold";
+      if (allPaid) return "text-[#28A44B]";
+      return "text-[#E9E5E6]";
     };
 
     const isExpanded = (monthIndex) => {

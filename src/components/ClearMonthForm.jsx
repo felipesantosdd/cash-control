@@ -36,7 +36,6 @@ const ClearMonthForm = ({ open, onClose, onSubmit, transactions }) => {
     month: false,
   });
 
-  // Computar meses que têm transações
   const availableMonths = useMemo(() => {
     const months = new Set();
     transactions.forEach((transaction) => {
@@ -46,7 +45,6 @@ const ClearMonthForm = ({ open, onClose, onSubmit, transactions }) => {
     return Array.from(months).sort((a, b) => a - b);
   }, [transactions]);
 
-  // Calcular total de transações do mês selecionado
   const monthTransactionsCount = useMemo(() => {
     if (selectedMonth === "") return 0;
     return transactions.filter((transaction) => {

@@ -28,7 +28,6 @@ const App = () => {
   const handleSubmit = async (formData) => {
     try {
       await createTransaction(formData);
-      setIsFormOpen(false);
     } catch (error) {
       alert("Erro ao salvar transação!");
     }
@@ -36,13 +35,11 @@ const App = () => {
 
   const handleClearMonth = async ({ month }) => {
     try {
-      // Filtra as transações do mês selecionado
       const monthTransactions = transactions.filter((transaction) => {
         const date = new Date(transaction.maturity);
         return date.getMonth() === month;
       });
 
-      // Deleta cada transação
       for (const transaction of monthTransactions) {
         await deleteTransaction(transaction.id);
       }
@@ -55,18 +52,15 @@ const App = () => {
 
   const handleCloneTransactions = async ({ sourceMonth, targetDate }) => {
     try {
-      // Filtra as transações do mês selecionado
       const sourceTransactions = transactions.filter((transaction) => {
         const transactionDate = new Date(transaction.maturity);
         return transactionDate.getMonth() === sourceMonth;
       });
 
-      // Para cada transação, cria uma nova com a data atualizada
       const clonedTransactions = sourceTransactions.map((transaction) => {
         const oldDate = new Date(transaction.maturity);
         const newDate = new Date(targetDate);
 
-        // Mantém o mesmo dia do mês, mas usa o novo mês e ano
         newDate.setDate(oldDate.getDate());
 
         return {
@@ -79,7 +73,6 @@ const App = () => {
         };
       });
 
-      // Cria as novas transações
       for (const transaction of clonedTransactions) {
         await createTransaction(transaction);
       }
