@@ -56,6 +56,7 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
 
   const [newCategory, setNewCategory] = useState("");
   const [isAddingCategory, setIsAddingCategory] = useState(false);
+
   const [errors, setErrors] = useState({
     valor: false,
     tipo: false,

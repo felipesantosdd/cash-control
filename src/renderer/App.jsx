@@ -1,15 +1,29 @@
 import React, { useState, useEffect } from "react";
 import TransactionForm from "../components/TransactionForm";
 import TransactionsTable from "../components/TransactionsTable";
+import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CloseIcon from "@mui/icons-material/Close";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloneTransactionsForm from "../components/CloneTransactionsForm";
 import { useTransaction } from "../context/TransactionContext";
-import { Fab } from "@mui/material";
+import { Button, Fab } from "@mui/material";
+import ClearMonthForm from "../components/ClearMonthForm";
 
 const App = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isCloneModalOpen, setIsCloneModalOpen] = useState(false);
+  const [isClearMonthModalOpen, setIsClearMonthModalOpen] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
 
-  const { loading, transactions, categories, createTransaction } =
-    useTransaction();
+  const {
+    loading,
+    transactions,
+    categories,
+    createTransaction,
+    deleteTransaction,
+  } = useTransaction();
 
   const handleSubmit = async (formData) => {
     try {
@@ -17,6 +31,62 @@ const App = () => {
       setIsFormOpen(false);
     } catch (error) {
       alert("Erro ao salvar transação!");
+    }
+  };
+
+  const handleClearMonth = async ({ month }) => {
+    try {
+      // Filtra as transações do mês selecionado
+      const monthTransactions = transactions.filter((transaction) => {
+        const date = new Date(transaction.maturity);
+        return date.getMonth() === month;
+      });
+
+      // Deleta cada transação
+      for (const transaction of monthTransactions) {
+        await deleteTransaction(transaction.id);
+      }
+
+      setIsClearMonthModalOpen(false);
+    } catch (error) {
+      console.error("Erro ao limpar transações do mês:", error);
+    }
+  };
+
+  const handleCloneTransactions = async ({ sourceMonth, targetDate }) => {
+    try {
+      // Filtra as transações do mês selecionado
+      const sourceTransactions = transactions.filter((transaction) => {
+        const transactionDate = new Date(transaction.maturity);
+        return transactionDate.getMonth() === sourceMonth;
+      });
+
+      // Para cada transação, cria uma nova com a data atualizada
+      const clonedTransactions = sourceTransactions.map((transaction) => {
+        const oldDate = new Date(transaction.maturity);
+        const newDate = new Date(targetDate);
+
+        // Mantém o mesmo dia do mês, mas usa o novo mês e ano
+        newDate.setDate(oldDate.getDate());
+
+        return {
+          valor: transaction.valor,
+          tipo: transaction.tipo,
+          category_id: transaction.category_id,
+          comentario: transaction.comentario,
+          maturity: newDate.toISOString().split("T")[0],
+          pay: false,
+        };
+      });
+
+      // Cria as novas transações
+      for (const transaction of clonedTransactions) {
+        await createTransaction(transaction);
+      }
+
+      setIsCloneModalOpen(false);
+    } catch (error) {
+      console.error("Erro ao clonar transações:", error);
     }
   };
 
@@ -48,22 +118,71 @@ const App = () => {
         )}
 
         <div
-          onClick={() => setIsFormOpen(true)}
           style={{
             marginTop: "10px",
             display: "flex",
-            flexDirection: "row-reverse",
+            flexDirection: "column",
             padding: "10px",
             position: "fixed",
             bottom: "0",
             right: "10px",
           }}
         >
-          <Fab style={{ backgroundColor: "#9F0049" }} aria-label="add">
-            <AddIcon />
-          </Fab>
+          {showMenu && (
+            <>
+              <Fab
+                onClick={() => setIsFormOpen(true)}
+                style={{ backgroundColor: "#9F0049", marginBottom: "10px" }}
+                aria-label="add"
+              >
+                <AddIcon />
+              </Fab>
+              <Fab
+                onClick={setIsCloneModalOpen}
+                style={{ backgroundColor: "#9F0049", marginBottom: "10px" }}
+                aria-label="add"
+              >
+                <ContentCopyIcon />
+              </Fab>
+              <Fab
+                onClick={() => setIsClearMonthModalOpen(true)}
+                style={{ backgroundColor: "#9F0049", marginBottom: "10px" }}
+                aria-label="add"
+              >
+                <DeleteIcon />
+              </Fab>
+              <Fab
+                onClick={() => setShowMenu(false)}
+                style={{ backgroundColor: "#9F0049", marginBottom: "10px" }}
+                aria-label="add"
+              >
+                <CloseIcon />
+              </Fab>
+            </>
+          )}
+          {!showMenu && (
+            <Fab
+              onClick={() => setShowMenu(true)}
+              style={{ backgroundColor: "#9F0049", marginBottom: "10px" }}
+              aria-label="add"
+            >
+              <MenuIcon />
+            </Fab>
+          )}
         </div>
       </div>
+      <CloneTransactionsForm
+        open={isCloneModalOpen}
+        onClose={() => setIsCloneModalOpen(false)}
+        onSubmit={handleCloneTransactions}
+        transactions={transactions}
+      />
+      <ClearMonthForm
+        open={isClearMonthModalOpen}
+        onClose={() => setIsClearMonthModalOpen(false)}
+        onSubmit={handleClearMonth}
+        transactions={transactions}
+      />
     </div>
   );
 };

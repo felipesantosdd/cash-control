@@ -30,6 +30,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
   const [expandedMonths, setExpandedMonths] = useState(new Set());
   const [openCategories, setOpenCategories] = useState(new Set());
   const [editingTransaction, setEditingTransaction] = useState(null);
+  const [selectedRowId, setSelectedRowId] = useState(null);
   const [sortDirection, setSortDirection] = useState("desc");
   const {
     updatedTransaction,
@@ -47,6 +48,9 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(numero);
+  };
+  const handleRowClick = (transactionId) => {
+    setSelectedRowId(transactionId === selectedRowId ? null : transactionId);
   };
 
   const handleMonthClick = (monthIndex) => {
@@ -340,7 +344,9 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                         return (
                           <tr
                             key={transaction.id}
-                            className={`border-t border-[#B9042C] ${className}`}
+                            className={`border-t border-[#B9042C] ${className} cursor-pointer 
+    ${selectedRowId === transaction.id ? "bg-blue-900 bg-opacity-50" : ""} 
+    hover:bg-blue-900 hover:bg-opacity-30 transition-colors duration-200`}
                           >
                             <td className={`p-2`}>
                               {capitalizeText(transaction.tipo)}
