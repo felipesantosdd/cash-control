@@ -264,7 +264,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
             <td
               key={index}
               className={`p-4 text-right ${
-                openMonth === index ? "bg-slate-800 bg-opacity-50" : ""
+                openMonth === index ? "bg-[#1E293B]" : ""
               }`}
             >
               {value > 0 ? (
@@ -501,7 +501,9 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                 {MONTHS.map((month, index) => (
                   <th
                     key={month}
-                    className="p-4 text-[#E9E5E6] text-right cursor-pointer hover:bg-[#2a2839]"
+                    className={`p-4 text-[#E9E5E6] text-right cursor-pointer ${
+                      openMonth === index ? "bg-[#1E293B]" : ""
+                    } hover:bg-[#2a2839]`}
                     onClick={() => handleMonthClick(index)}
                   >
                     <div className="flex items-center justify-end space-x-2">
@@ -545,21 +547,24 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
               {groupedData.map((row) => (
                 <Row key={row.categoryName} row={row} />
               ))}
-              {/* Linha de separação */}
               <tr className="border-t-2 border-[#B9042C]">
-                <td colSpan={14} className="p-2 text-[#E9E5E6]"></td>
+                <td colSpan={14} className={` text-[#E9E5E6] `}></td>
               </tr>
-              {/* Linha do balanço */}
               <tr className="bg-[#1F1D2C] font-medium">
                 <td className="p-4 text-[#E9E5E6] text-left">Balanço Mensal</td>
                 {monthlyBalances.map((balance, index) => (
-                  <td key={index} className="p-4 text-[#E9E5E6] text-right">
+                  <td
+                    key={index}
+                    className={`p-4 text-[#E9E5E6] text-right ${
+                      openMonth === index ? "bg-[#1E293B]" : ""
+                    }`}
+                  >
                     <span className={getBalanceClass(balance)}>
                       {formatCurrency(balance)}
                     </span>
                   </td>
                 ))}
-                <td className="p-4 text-[#E9E5E6] text-right font-bold">
+                <td className="p-4 text-[#E9E5E6] text-right font-bold ">
                   <span className={getBalanceClass(totalBalance)}>
                     {formatCurrency(totalBalance)}
                   </span>
