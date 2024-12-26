@@ -261,7 +261,12 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
             {row.categoryName}
           </td>
           {row.monthlyValues.map((value, index) => (
-            <td key={index} className={`p-4 text-right`}>
+            <td
+              key={index}
+              className={`p-4 text-right ${
+                openMonth === index ? "bg-slate-800 bg-opacity-50" : ""
+              }`}
+            >
               {value > 0 ? (
                 <div className="flex items-center justify-end space-x-2">
                   <span
