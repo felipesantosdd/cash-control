@@ -9,6 +9,7 @@ class TransactionService {
         category_id: transactionData.category_id,
         comentario: transactionData.comentario || "",
         maturity: transactionData.maturity || "",
+        link: transactionData.link || "",
         pay: false,
       });
 

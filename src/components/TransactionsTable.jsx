@@ -3,6 +3,7 @@ import { capitalizeText } from "../utils/stringUtils";
 import { Switch, Fab } from "@mui/material";
 import { useTransaction } from "../context/TransactionContext";
 import DeleteIcon from "@mui/icons-material/Delete";
+import LinkIcon from "@mui/icons-material/Link";
 import EditIcon from "@mui/icons-material/Edit";
 import TransactionForm from "./TransactionForm";
 
@@ -32,11 +33,13 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [sortDirection, setSortDirection] = useState("desc");
+  const [visibleContent, setVisibleContent] = useState(new Map());
   const {
     updatedTransaction,
     currentYear,
     handleYearChange,
     deleteTransaction,
+    openLink,
   } = useTransaction();
 
   const formatarValorMonetario = (valor) => {
@@ -307,105 +310,125 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
           row.monthlyTransactions[openMonth].length > 0 && (
             <tr>
               <td colSpan={14} className="bg-[#1F1D2C]">
-                <div className="p-4 bg-slate-800 text-[#E9E5E6] ">
-                  <h6 className="font-bold mb-4">
-                    {row.categoryName === "Recursos"
-                      ? `${row.categoryName} obtidos em  ${MONTHS[openMonth]}`
-                      : `Gastos de ${MONTHS[openMonth]} com ${row.categoryName}`}
-                  </h6>
-                  <table className="w-full">
-                    <thead>
-                      <tr className="text-left">
-                        <th className="p-2 text-[#E9E5E6]">Tipo</th>
-                        <th className="p-2 text-[#E9E5E6]">Comentário</th>
-                        <th
-                          className="p-2 text-[#E9E5E6] cursor-pointer"
-                          onClick={toggleSortDirection}
-                        >
-                          Valor {sortDirection === "desc" ? "↓" : "↑"}
-                        </th>
+                <div
+                  className={`
+        overflow-hidden transition-all duration-300 ease-in-out
+        transform origin-top
+        ${isExpanded ? "animate-expand max-h-96" : "animate-collapse max-h-0"}
+      `}
+                >
+                  <div className="p-4 bg-slate-800 text-[#E9E5E6]">
+                    <h6 className="font-bold mb-4">
+                      {row.categoryName === "Recursos"
+                        ? `${row.categoryName} obtidos em ${MONTHS[openMonth]}`
+                        : `Gastos de ${MONTHS[openMonth]} com ${row.categoryName}`}
+                    </h6>
+                    <table className="w-full">
+                      <thead>
+                        <tr className="text-left">
+                          <th className="p-2 text-[#E9E5E6]">Tipo</th>
+                          <th className="p-2 text-[#E9E5E6]">Comentário</th>
+                          <th
+                            className="p-2 text-[#E9E5E6] cursor-pointer"
+                            onClick={toggleSortDirection}
+                          >
+                            Valor {sortDirection === "desc" ? "↓" : "↑"}
+                          </th>
 
-                        <th className="p-2 text-[#E9E5E6]">Status</th>
-                        <th className="p-2 text-[#E9E5E6]">Vencimento</th>
-                        <th className="p-2 text-[#E9E5E6]">Pago</th>
-                        <th className="p-2 text-[#E9E5E6] text-center  justify-center align-middle w-[100px]">
-                          Ação
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {getSortedTransactions(
-                        row.monthlyTransactions[openMonth]
-                      ).map((transaction) => {
-                        const { className, status } =
-                          getTransactionStatus(transaction);
-                        return (
-                          <tr
-                            key={transaction.id}
-                            className={`border-t border-[#B9042C] ${className} cursor-pointer 
+                          <th className="p-2 text-[#E9E5E6]">Status</th>
+                          <th className="p-2 text-[#E9E5E6]">Vencimento</th>
+                          <th className="p-2 text-[#E9E5E6]">Pago</th>
+                          <th className="p-2 text-[#E9E5E6] text-center  justify-center align-middle w-[100px]">
+                            Ação
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {getSortedTransactions(
+                          row.monthlyTransactions[openMonth]
+                        ).map((transaction) => {
+                          const { className, status } =
+                            getTransactionStatus(transaction);
+                          return (
+                            <tr
+                              key={transaction.id}
+                              className={`border-t border-[#B9042C] ${className} cursor-pointer 
     ${selectedRowId === transaction.id ? "bg-blue-900 bg-opacity-50" : ""} 
     hover:bg-blue-900 hover:bg-opacity-30 transition-colors duration-200`}
-                          >
-                            <td className={`p-2`}>
-                              {capitalizeText(transaction.tipo)}
-                            </td>
-                            <td className={`p-2`}>
-                              {transaction.comentario || "Sem comentário"}
-                            </td>
-                            <td className={`p-2`}>
-                              {formatCurrency(Number(transaction.valor))}
-                            </td>
-                            <td className={`p-2`}>{status}</td>
-                            <td className="p-2">
-                              {new Date(
-                                Date.parse(transaction.maturity) +
-                                  12 * 60 * 60 * 1000
-                              ).toLocaleDateString("pt-BR")}
-                            </td>
-                            <td className={`p-2`}>
-                              <div className="switch-container">
-                                <Switch
-                                  checked={!!transaction.pay}
-                                  onChange={(e) =>
-                                    handlePaymentUpdate(
-                                      transaction.id,
-                                      e.target.checked
-                                    )
-                                  }
-                                />
-                              </div>
-                            </td>
-                            <td
-                              className={`p-1 flex justify-center items-center  w-[100px] h-[50px] `}
                             >
-                              <div className="delete-container">
-                                <DeleteIcon
-                                  style={{
-                                    margin: "0 10px",
-                                    cursor: "pointer",
-                                  }}
-                                  color="error"
-                                  onClick={() =>
-                                    deleteTransaction(transaction.id)
-                                  }
-                                />
-                                <EditIcon
-                                  style={{
-                                    margin: "0 10px",
-                                    cursor: "pointer",
-                                  }}
-                                  color="error"
-                                  onClick={() =>
-                                    setEditingTransaction(transaction)
-                                  }
-                                />
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                              <td className={`p-2`}>
+                                {capitalizeText(transaction.tipo)}
+                              </td>
+                              <td className={`p-2`}>
+                                {transaction.comentario || "Sem comentário"}
+                              </td>
+                              <td className={`p-2`}>
+                                {formatCurrency(Number(transaction.valor))}
+                              </td>
+                              <td className={`p-2`}>{status}</td>
+                              <td className="p-2">
+                                {new Date(
+                                  Date.parse(transaction.maturity) +
+                                    12 * 60 * 60 * 1000
+                                ).toLocaleDateString("pt-BR")}
+                              </td>
+                              <td className={`p-2`}>
+                                <div className="switch-container">
+                                  <Switch
+                                    checked={!!transaction.pay}
+                                    onChange={(e) =>
+                                      handlePaymentUpdate(
+                                        transaction.id,
+                                        e.target.checked
+                                      )
+                                    }
+                                  />
+                                </div>
+                              </td>
+                              <td
+                                className={`p-1 flex justify-center items-center  w-[150px] h-[50px] `}
+                              >
+                                <div className="delete-container">
+                                  <DeleteIcon
+                                    style={{
+                                      margin: "0 10px",
+                                      cursor: "pointer",
+                                    }}
+                                    color="error"
+                                    onClick={() =>
+                                      deleteTransaction(transaction.id)
+                                    }
+                                  />
+
+                                  <EditIcon
+                                    style={{
+                                      margin: "0 10px",
+                                      cursor: "pointer",
+                                    }}
+                                    color="error"
+                                    onClick={() =>
+                                      setEditingTransaction(transaction)
+                                    }
+                                  />
+
+                                  <LinkIcon
+                                    style={{
+                                      margin: "0 10px",
+                                      cursor: "pointer",
+                                    }}
+                                    color={
+                                      transaction.link ? "error" : "disabled"
+                                    }
+                                    onClick={() => openLink(transaction.link)}
+                                  />
+                                </div>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </td>
             </tr>

@@ -6,21 +6,15 @@ class Transaction {
     const db = await getDatabase();
     return new Promise((resolve, reject) => {
       const id = uuidv4();
-      const { valor, tipo, category_id, comentario, maturity, pay } =
+      const { valor, tipo, category_id, comentario, maturity, pay, link } =
         transaction;
 
       db.run(
         `INSERT INTO transactions (
-          id, 
-          valor, 
-          tipo, 
-          category_id, 
-          comentario,
-          maturity,
-          pay,
-          created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
-        [id, valor, tipo, category_id, comentario, maturity, pay],
+        id, valor, tipo, category_id, comentario, 
+        maturity, pay, link, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
+        [id, valor, tipo, category_id, comentario, maturity, pay, link],
         function (err) {
           if (err) {
             console.error("Erro ao inserir transação:", err);
@@ -34,6 +28,7 @@ class Transaction {
               comentario,
               maturity,
               pay,
+              link,
               created_at: new Date().toISOString(),
             });
           }
@@ -90,22 +85,17 @@ class Transaction {
     const db = await getDatabase();
 
     try {
-      // Se não houver dados para atualizar, retorna erro
       if (Object.keys(transactionData).length === 0) {
         throw new Error("Nenhum dado fornecido para atualização");
       }
 
-      // Cria a query dinâmica baseada nos campos fornecidos
       const fields = Object.keys(transactionData);
       const values = Object.values(transactionData);
 
-      // Adiciona o id aos valores
       values.push(id);
 
-      // Cria a parte SET da query
       const setClause = fields.map((field) => `${field} = ?`).join(", ");
 
-      // Query completa com WHERE
       const query = `UPDATE transactions SET ${setClause} WHERE id = ?`;
 
       return new Promise((resolve, reject) => {
@@ -114,9 +104,8 @@ class Transaction {
             reject(err);
           } else {
             if (this.changes === 0) {
-              resolve(null); // Nenhum registro foi atualizado
+              resolve(null); //
             } else {
-              // Busca a transação atualizada
               const updatedTransaction = await Transaction.findById(id);
               resolve(updatedTransaction);
             }

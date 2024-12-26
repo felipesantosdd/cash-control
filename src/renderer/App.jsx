@@ -155,6 +155,7 @@ const App = () => {
           )}
           {!showMenu && (
             <Fab
+              className="animate-bounce"
               onClick={() => setShowMenu(true)}
               style={{ backgroundColor: "#9F0049", marginBottom: "10px" }}
               aria-label="add"

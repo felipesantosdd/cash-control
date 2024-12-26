@@ -1,5 +1,5 @@
 const path = require("path");
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, shell } = require("electron");
 const { getDatabase } = require("./backend/config/database");
 const categoryService = require("./backend/services/categoryService");
 const transactionService = require("./backend/services/transactionService");
@@ -30,6 +30,10 @@ const createWindow = () => {
 };
 
 // IPC Handlers
+
+ipcMain.handle("open-external", async (_, url) => {
+  await shell.openExternal(url);
+});
 ipcMain.handle("create-transaction", async (_, data) => {
   try {
     const result = await transactionService.createTransaction(data);

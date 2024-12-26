@@ -52,6 +52,7 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
     comentario: initialData?.comentario || "",
     maturity: initialData?.maturity || null,
     pay: initialData?.pay || false,
+    link: initialData?.link || "",
   });
 
   const [newCategory, setNewCategory] = useState("");
@@ -63,6 +64,7 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
     category_id: false,
     comentario: false,
     maturity: false,
+    link: false,
   });
 
   const formatarValorMonetario = (valor) => {
@@ -148,41 +150,52 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
     }
   };
 
+  const handleChangeLink = (e) => {
+    const link = e.target.value;
+    setFormData((prev) => ({ ...prev, link }));
+
+    if (!link) {
+      setErrors((prev) => ({ ...prev, link: false }));
+      return;
+    }
+
+    try {
+      new URL(link); // Valida URL sem modificar
+      setErrors((prev) => ({ ...prev, link: false }));
+    } catch {
+      setErrors((prev) => ({ ...prev, link: true }));
+    }
+  };
+
   const handleSubmit = async (e) => {
-    if (e) {
-      e.preventDefault();
-    }
+    if (e) e.preventDefault();
+
     let hasErrors = false;
+    const requiredFields = [
+      "valor",
+      "tipo",
+      "category_id",
+      "comentario",
+      "maturity",
+    ];
 
-    if (!formData.valor) {
-      setErrors((prev) => ({ ...prev, valor: true }));
-      hasErrors = true;
-    }
+    requiredFields.forEach((field) => {
+      if (!formData[field]) {
+        setErrors((prev) => ({ ...prev, [field]: true }));
+        hasErrors = true;
+      }
+    });
 
-    if (!formData.tipo) {
-      setErrors((prev) => ({ ...prev, tipo: true }));
+    if (errors.link) {
       hasErrors = true;
-    }
-
-    if (!formData.category_id) {
-      setErrors((prev) => ({ ...prev, category_id: true }));
-      hasErrors = true;
-    }
-
-    if (!formData.comentario.trim()) {
-      setErrors((prev) => ({ ...prev, comentario: true }));
-      hasErrors = true;
-    }
-
-    if (!formData.maturity) {
-      setErrors((prev) => ({ ...prev, maturity: true }));
-      hasErrors = true;
+      return;
     }
 
     if (!hasErrors) {
       await onSubmit({
         ...formData,
         id: initialData?.id,
+        link: formData.link || null,
       });
       onClose();
     }
@@ -237,6 +250,7 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
           comentario: "",
           maturity: currentDate,
           pay: false,
+          link: "",
         });
 
         setErrors({
@@ -245,6 +259,7 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
           category_id: false,
           comentario: false,
           maturity: false,
+          link: false,
         });
       } catch (error) {
         console.error("Erro ao salvar transação:", error);
@@ -576,6 +591,29 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
               {errors.comentario && (
                 <FormHelperText error>
                   Por favor, insira um comentário..
+                </FormHelperText>
+              )}
+            </FormControl>
+            <FormControl fullWidth className="m-5" style={{ margin: "10px 0" }}>
+              <TextField
+                label="Link"
+                name="link"
+                value={formData.link}
+                onChange={handleChangeLink}
+                sx={{
+                  "& .MuiInputLabel-root": { color: "#B9042C" },
+                  "& .MuiInputLabel-root.Mui-focused": { color: "#B9042C" },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": { borderColor: "#B9042C" },
+                    "&:hover fieldset": { borderColor: "#B9042C" },
+                    "&.Mui-focused fieldset": { borderColor: "#B9042C" },
+                    "& input": { color: "white" },
+                  },
+                }}
+              />
+              {errors.link && (
+                <FormHelperText error>
+                  Por favor, insira um link válido ou deixe o campo vazio
                 </FormHelperText>
               )}
             </FormControl>

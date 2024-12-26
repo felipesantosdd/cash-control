@@ -14,6 +14,8 @@ contextBridge.exposeInMainWorld("api", {
     ipcRenderer.invoke("update-transaction", id, data),
   getTransactionsByYear: (year) =>
     ipcRenderer.invoke("get-transactions-by-year", year),
+
+  openExternal: (url) => ipcRenderer.invoke("open-external", url),
 });
 
 window.addEventListener("DOMContentLoaded", () => {

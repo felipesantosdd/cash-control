@@ -98,6 +98,13 @@ export const TransactionProvider = ({ children }) => {
     setCurrentYear(newYear);
   };
 
+  const openLink = (url) => {
+    if (!url) return;
+    window.api.openExternal(url).catch((error) => {
+      console.error("Erro ao abrir link:", error);
+    });
+  };
+
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -126,6 +133,7 @@ export const TransactionProvider = ({ children }) => {
         handleYearChange,
         deleteTransaction,
         TRANSACTION_TYPES,
+        openLink,
       }}
     >
       {children}
