@@ -40,13 +40,13 @@ class TransactionService {
 
   async updateTransaction(id, transactionData) {
     try {
-      const updatedTransaction = await Transaction.update(id, transactionData);
+      const updateTransaction = await Transaction.update(id, transactionData);
 
-      if (!updatedTransaction) {
+      if (!updateTransaction) {
         throw new Error("Transação não encontrada");
       }
 
-      return updatedTransaction;
+      return updateTransaction;
     } catch (error) {
       throw new Error(`Erro ao atualizar transação: ${error.message}`);
     }

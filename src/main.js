@@ -108,6 +108,7 @@ const initializeApp = async () => {
   try {
     await getDatabase();
     createWindow();
+    mainWindow.maximize();
 
     mainWindow.removeMenu();
   } catch (error) {

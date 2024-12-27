@@ -37,7 +37,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
   const [sortDirection, setSortDirection] = useState("desc");
   const [visibleContent, setVisibleContent] = useState(new Map());
   const {
-    updatedTransaction,
+    updateTransaction,
     currentYear,
     handleYearChange,
     deleteTransaction,
@@ -115,8 +115,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
 
   const handleEditSubmit = async (editedData) => {
     try {
-      await updatedTransaction(editedData.id, editedData);
-      // setEditingTransaction(null);
+      await updateTransaction(editedData.id, editedData);
     } catch (error) {
       console.error("Erro ao atualizar transação:", error);
     }
@@ -130,16 +129,12 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
       : "text-gray-500";
   };
 
-  useEffect(() => {
-    console.log(editingTransaction);
-  }, [editingTransaction]);
-
   const formatCurrency = (value) => {
     return value === 0 ? "-" : `R$ ${formatarValorMonetario(value)}`;
   };
 
   const handlePaymentUpdate = async (transactionId, newPayStatus) => {
-    await updatedTransaction(transactionId, { pay: newPayStatus });
+    await updateTransaction(transactionId, { pay: newPayStatus });
   };
 
   const getTransactionStatus = (transaction) => {
