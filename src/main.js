@@ -108,6 +108,8 @@ const initializeApp = async () => {
   try {
     await getDatabase();
     createWindow();
+
+    mainWindow.removeMenu();
   } catch (error) {
     console.error("Erro ao inicializar aplicação:", error);
     app.quit();

@@ -11,7 +11,8 @@
     "build": "webpack",
     "dev": "concurrently \"npm run watch\" \"npm run start\"",
     "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "dist": "electron-builder",
+    "release": "electron-builder -wml"
   },
   "build": {
     "appId": "com.felipe.cash-control",
@@ -26,10 +27,29 @@
     ],
     "win": {
       "target": [
-        "nsis",
-        "portable"
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
       ],
       "icon": "src/assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Cash Control",
+      "runAfterFinish": true,
+      "installerIcon": "src/assets/icon.ico",
+      "uninstallerIcon": "src/assets/icon.ico",
+      "installerHeaderIcon": "src/assets/icon.ico",
+      "menuCategory": true,
+      "displayLanguageSelector": true,
+      "deleteAppDataOnUninstall": true,
+      "differentialPackage": true
     },
     "mac": {
       "target": [
@@ -42,7 +62,12 @@
         "AppImage",
         "deb"
       ],
-      "icon": "src/assets/icon.png"
+      "icon": "src/assets/icon.png",
+      "desktop": {
+        "Name": "Cash Control",
+        "Type": "Application",
+        "Categories": "Office;Finance"
+      }
     }
   },
   "devDependencies": {
