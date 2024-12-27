@@ -80,6 +80,14 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
 
   const getSortedTransactions = (transactions) => {
     return [...transactions].sort((a, b) => {
+      // Primeiro ordena se começa com "Frete"
+      const aIsShipping = a.comentario.toLowerCase().startsWith("frete");
+      const bIsShipping = b.comentario.toLowerCase().startsWith("frete");
+
+      if (aIsShipping && !bIsShipping) return 1;
+      if (!aIsShipping && bIsShipping) return -1;
+
+      // Depois aplica a ordenação normal por valor
       const comparison = Number(b.valor) - Number(a.valor);
       return sortDirection === "desc" ? comparison : -comparison;
     });
