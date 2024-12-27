@@ -2,190 +2,113 @@
 
 ## 📋 Descrição
 
-Um aplicativo Electron para gerenciamento financeiro pessoal que permite o controle de transações por categorias, com visualização anual e mensal dos gastos e receitas. Construído com Electron, React e SQLite para fornecer uma experiência desktop robusta e responsiva.
+CashControl é um aplicativo desktop desenvolvido com Electron para gerenciamento financeiro pessoal. Ele permite controlar transações por categorias, oferecendo visualizações anuais e mensais de gastos e receitas, com uma interface intuitiva e recursos avançados de organização.
 
-## 🚀 Principais Funcionalidades
+## 🚀 Funcionalidades Principais
 
-- Visualização de transações por categoria e mês
-- Controle de status de pagamento
-- Balanço mensal e anual
-- Identificação visual de status (pago, pendente, atrasado)
-- Navegação entre anos
-- Categorização de transações
-- Links externos para comprovantes ou documentos
-- Suporte a múltiplas categorias
-- Interface desktop nativa
+- **Gestão de Transações**
 
-## 💻 Pré-requisitos
+  - Visualização por categoria e mês
+  - Controle de status de pagamento (pago, pendente, atrasado)
+  - Adição de links para comprovantes, pagina de compra ou documentos
+  - Sistema de categorização flexível
 
-- Node.js 18+
-- npm ou yarn
-- Windows, macOS ou Linux
+- **Visualização Financeira**
 
-## 🛠️ Instalação
+  - Balanço mensal e anual detalhado
+  - Identificação visual de status por cores
+  - Navegação intuitiva entre períodos
+  - Agrupamento por categorias
 
-1. Clone o repositório
+- **Recursos Avançados**
+  - Clonagem de transações entre meses
+  - Limpeza de dados mensais
+  - Suporte a múltiplas categorias
+  - Interface desktop nativa multiplataforma
 
-```bash
-git clone [URL_DO_REPOSITÓRIO]
-```
+## 💻 Como Instalar
 
-2. Instale as dependências
+1. **Pré-requisitos**
 
-```bash
-npm install
-```
+   - Node.js 18 ou superior
+   - npm ou yarn
+   - Sistema operacional: Windows, macOS ou Linux
 
-3. Inicie o aplicativo em modo desenvolvimento
+2. **Instalação para Desenvolvimento**
 
-```bash
-npm run dev
-```
+   ```bash
+   # Clone o repositório
+   git clone [URL_DO_REPOSITÓRIO]
 
-4. Para criar o instalador
+   # Entre na pasta do projeto
+   cd cash-control
 
-```bash
-npm run dist
-```
+   # Instale as dependências
+   npm install
 
-## 🏗️ Estrutura do Projeto
+   # Inicie em modo desenvolvimento
+   npm run dev
+   ```
 
-```
-src/
-├── backend/
-│   ├── config/
-│   │   └── database.js      # Configuração do SQLite
-│   ├── models/
-│   │   ├── Category.js      # Modelo de categorias
-│   │   └── Transaction.js   # Modelo de transações
-│   └── services/
-│       ├── categoryService.js    # Serviço de categorias
-│       └── transactionService.js # Serviço de transações
-├── context/
-│   └── TransactionContext.jsx    # Contexto React global
-├── main.js                       # Entrada do Electron
-└── preload.js                    # Script de preload do Electron
-```
+3. **Criar Versão de Produção**
+   ```bash
+   # Gerar instalador
+   npm run dist
+   ```
 
-## 🔧 Tecnologias Utilizadas
+## 🎯 Como Usar
 
-- Electron 33.2.1
-- React 18
-- Better SQLite3
-- Material-UI
-- Tailwind CSS
-- Webpack
-- UUID para IDs únicos
+### Gerenciando Categorias
 
-## 📦 Estrutura do Banco de Dados
+1. Clique no botão "+" no menu flutuante
+2. Clique em "Nova Categoria"
+3. Digite o nome desejado
+4. Salve a categoria
 
-### Tabela: categories
+### Criando Transações
 
-```sql
-CREATE TABLE categories (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL UNIQUE
-);
-```
+1. Clique no botão "+" no menu flutuante
+2. Preencha os campos:
+   - Valor
+   - Tipo (entrada/saída)
+   - Categoria
+   - Data de vencimento
+   - Link para comprovante (opcional)
+   - Comentário (opcional)
 
-### Tabela: transactions
+### Recursos Especiais
 
-```sql
-CREATE TABLE transactions (
-  id TEXT PRIMARY KEY,
-  valor REAL NOT NULL,
-  tipo TEXT NOT NULL,
-  category_id TEXT,
-  comentario TEXT,
-  maturity TEXT,
-  pay BOOLEAN,
-  link TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (category_id) REFERENCES categories(id)
-);
-```
+- **Clonagem de Transações**: Use o botão de duplicação para copiar transações entre meses
+- **Limpeza Mensal**: Remova todas as transações de um mês específico
+- **Links Externos**: Adicione links para comprovantes ou documentação
+- **Documentação**: Acesse a documentação completa pelo botão do menu
 
-## 🎯 API Interna
+### Localização dos Dados
 
-### Categorias
-
-- `createCategory(name)`: Cria uma nova categoria
-- `getAllCategories()`: Lista todas as categorias
-- `getCategoryById(id)`: Busca categoria por ID
-
-### Transações
-
-- `createTransaction(data)`: Cria nova transação
-- `getTransactionsByYear(year)`: Busca transações por ano
-- `updateTransaction(id, data)`: Atualiza transação
-- `deleteTransaction(id)`: Remove transação
-- `calculateBalance()`: Calcula saldo total
-
-## 💾 Gerenciamento de Estado
-
-O aplicativo usa React Context para gerenciamento de estado global através do `TransactionContext`, que fornece:
-
-- Estado atual das transações e categorias
-- Funções de manipulação de dados
-- Estado de carregamento
-- Navegação entre anos
-
-## 🔒 Segurança
-
-- Uso de SQLite com better-sqlite3 para dados locais
-- Validação de dados em todas as operações
-- Sanitização de inputs
-- Prevenção de SQL injection através de prepared statements
-
-## 🎨 Personalização
-
-O projeto usa Tailwind CSS e Material-UI para estilização. Você pode personalizar:
-
-- Cores dos status
-- Layout da tabela
-- Estilos dos componentes
-- Temas e cores
-
-## 📝 Scripts Disponíveis
-
-- `npm start`: Inicia o app em modo desenvolvimento
-- `npm run dev`: Inicia com hot reload
-- `npm run build`: Compila o app
-- `npm run dist`: Cria o instalador
-- `npm run pack`: Cria versão não empacotada
-
-## ❗ Troubleshooting
-
-### Problemas Comuns
-
-1. Erro de banco de dados:
-
-   - Verifique permissões do diretório
-   - Confirme localização do arquivo SQLite
-
-2. Erro ao criar transações:
-
-   - Verifique formato dos dados
-   - Confirme existência da categoria
-
-3. Problemas de build:
-   - Limpe cache: `npm cache clean --force`
-   - Reinstale node_modules
-
-### Localização do Banco de Dados
+O banco de dados SQLite fica armazenado em:
 
 - Windows: `%APPDATA%/cash-control/database.sqlite`
 - macOS: `~/Library/Application Support/cash-control/database.sqlite`
 - Linux: `~/.config/cash-control/database.sqlite`
 
-## 🤝 Contribuindo
+## 🔧 Solução de Problemas
 
-1. Fork o projeto
-2. Crie sua branch (`git checkout -b feature/NovaFuncionalidade`)
-3. Commit suas mudanças (`git commit -m 'Add: nova funcionalidade'`)
-4. Push para a branch (`git push origin feature/NovaFuncionalidade`)
-5. Abra um Pull Request
+### Problemas Comuns
+
+1. **Erro no Banco de Dados**
+
+   - Verifique as permissões do diretório
+   - Confirme se o caminho do banco está correto
+
+2. **Erro ao Criar Transações**
+
+   - Verifique se todos os campos obrigatórios estão preenchidos
+   - Confirme se a categoria selecionada existe
+
+3. **Problemas na Instalação**
+   - Limpe o cache: `npm cache clean --force`
+   - Remova node_modules e reinstale as dependências
 
 ## 📄 Licença
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Este projeto está sob a licença MIT. Consulte o arquivo [LICENSE.md](LICENSE.md) para mais detalhes.
