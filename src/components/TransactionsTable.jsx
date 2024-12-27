@@ -6,6 +6,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import LinkIcon from "@mui/icons-material/Link";
 import EditIcon from "@mui/icons-material/Edit";
 import TransactionForm from "./TransactionForm";
+import MoneyOffOutlinedIcon from "@mui/icons-material/MoneyOffOutlined";
+import AttachMoneyOutlinedIcon from "@mui/icons-material/AttachMoneyOutlined";
 
 const MONTHS = [
   "Janeiro",
@@ -328,10 +330,10 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                     <table className="w-full">
                       <thead>
                         <tr className="text-left">
-                          <th className="p-2 text-[#E9E5E6] w-[10%]">Tipo</th>
-                          <th className="p-2 text-[#E9E5E6] w-[30%]">
+                          <th className="p-2 text-[#E9E5E6] w-[45%]">
                             Comentário
                           </th>
+                          <th className="p-2 text-[#E9E5E6] w-[5%]">Tipo</th>
                           <th
                             className="p-2 text-[#E9E5E6] cursor-pointer w-[15%]"
                             onClick={toggleSortDirection}
@@ -339,11 +341,13 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                             Valor {sortDirection === "desc" ? "↓" : "↑"}
                           </th>
                           <th className="p-2 text-[#E9E5E6] w-[10%]">Status</th>
-                          <th className="p-2 text-[#E9E5E6] w-[15%]">
+                          <th className="p-2 text-[#E9E5E6] w-[10%]">
                             Vencimento
                           </th>
-                          <th className="p-2 text-[#E9E5E6] w-[10%]">Pago</th>
-                          <th className="p-2 text-[#E9E5E6] w-[10%]">Ação</th>
+                          <th className="p-2 text-[#E9E5E6] w-[5%] ">Pago</th>
+                          <th className="p-2 text-[#E9E5E6] w-[5%] text-center">
+                            Ação
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
@@ -360,10 +364,14 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
     hover:bg-blue-900 hover:bg-opacity-30 transition-colors duration-200`}
                             >
                               <td className={`p-2`}>
-                                {capitalizeText(transaction.tipo)}
+                                {transaction.comentario || "Sem comentário"}
                               </td>
                               <td className={`p-2`}>
-                                {transaction.comentario || "Sem comentário"}
+                                {transaction.tipo === "entrada" ? (
+                                  <AttachMoneyOutlinedIcon />
+                                ) : (
+                                  <MoneyOffOutlinedIcon color="error" />
+                                )}
                               </td>
                               <td className={`p-2`}>
                                 {formatCurrency(Number(transaction.valor))}
