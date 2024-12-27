@@ -106,7 +106,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
   const handleEditSubmit = async (editedData) => {
     try {
       await updatedTransaction(editedData.id, editedData);
-      setEditingTransaction(null);
+      // setEditingTransaction(null);
     } catch (error) {
       console.error("Erro ao atualizar transação:", error);
     }
