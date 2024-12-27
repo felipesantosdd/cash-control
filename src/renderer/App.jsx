@@ -10,6 +10,7 @@ import CloneTransactionsForm from "../components/CloneTransactionsForm";
 import { useTransaction } from "../context/TransactionContext";
 import { Button, Fab } from "@mui/material";
 import ClearMonthForm from "../components/ClearMonthForm";
+import MenuAnimado from "../components/MenuItem";
 
 const App = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -122,7 +123,12 @@ const App = () => {
             right: "10px",
           }}
         >
-          {showMenu && (
+          <MenuAnimado
+            onAddClick={() => setIsFormOpen(true)}
+            onCloneClick={() => setIsCloneModalOpen(true)}
+            onDeleteClick={() => setIsClearMonthModalOpen(true)}
+          />
+          {/* {showMenu && (
             <>
               <Fab
                 onClick={() => setIsFormOpen(true)}
@@ -163,7 +169,7 @@ const App = () => {
             >
               <MenuIcon />
             </Fab>
-          )}
+          )} */}
         </div>
       </div>
       <CloneTransactionsForm
