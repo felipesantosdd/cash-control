@@ -9,7 +9,41 @@
     "start": "electron .",
     "watch": "webpack --watch",
     "build": "webpack",
-    "dev": "concurrently \"npm run watch\" \"npm run start\""
+    "dev": "concurrently \"npm run watch\" \"npm run start\"",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "com.felipe.cash-control",
+    "productName": "Cash Control",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "dist/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "src/assets/icon.ico"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "icon": "src/assets/icon.icns"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "src/assets/icon.png"
+    }
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
@@ -39,13 +73,13 @@
     "@mui/icons-material": "^6.2.0",
     "@mui/material": "^6.1.10",
     "@mui/x-date-pickers": "^7.23.1",
+    "better-sqlite3": "^11.7.0",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
     "dayjs": "^1.11.13",
     "express": "^4.21.2",
     "react": "^18.x.x",
     "react-dom": "^18.x.x",
-    "sqlite3": "^5.1.7",
     "uuid": "^11.0.3"
   }
 }

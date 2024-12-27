@@ -1,74 +1,103 @@
-const { v4: uuidv4 } = require('uuid');
-const { getDatabase } = require('../config/database');
+const { v4: uuidv4 } = require("uuid");
+const { getDatabase } = require("../config/database");
 
 class Category {
-  static async create(name) {
+  static create(name) {
     try {
-        
-        
-        const db = await getDatabase();
-        const id = uuidv4();
+      const db = getDatabase();
+      const id = uuidv4();
 
-        return new Promise((resolve, reject) => {
-            db.run(
-                'INSERT INTO categories (id, name) VALUES (?, ?)',
-                [id, name],
-                function(err) {
-                    if (err) {
-                        console.error('Model: Erro ao inserir no banco:', err); // NOVO: Log
-                        reject(err);
-                        return;
-                    }
-                    
-                    const category = { id, name };
-                    
-                    resolve(category);
-                }
-            );
-        });
+      const stmt = db.prepare(
+        "INSERT INTO categories (id, name) VALUES (?, ?)"
+      );
+      stmt.run(id, name);
+
+      return { id, name };
     } catch (error) {
-        console.error('Model: Erro inesperado:', error); // NOVO: Log
-        throw error;
+      console.error("Model: Erro ao criar categoria:", error);
+      throw error;
     }
-}
-
-  static async getAll() {
-    const db = await getDatabase();
-    return new Promise((resolve, reject) => {
-      db.all('SELECT * FROM categories ORDER BY name', [], (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
-      });
-    });
   }
 
-  static async findById(id) {
-    const db = await getDatabase();
-    return new Promise((resolve, reject) => {
-      db.get('SELECT * FROM categories WHERE id = ?', [id], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row);
-        }
-      });
-    });
+  static getAll() {
+    try {
+      const db = getDatabase();
+      const stmt = db.prepare("SELECT * FROM categories ORDER BY name");
+      return stmt.all();
+    } catch (error) {
+      console.error("Model: Erro ao buscar todas categorias:", error);
+      throw error;
+    }
   }
 
-  static async findByName(name) {
-    const db = await getDatabase();
-    return new Promise((resolve, reject) => {
-      db.get('SELECT * FROM categories WHERE name = ?', [name], (err, row) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(row);
-        }
+  static findById(id) {
+    try {
+      const db = getDatabase();
+      const stmt = db.prepare("SELECT * FROM categories WHERE id = ?");
+      return stmt.get(id);
+    } catch (error) {
+      console.error("Model: Erro ao buscar categoria por ID:", error);
+      throw error;
+    }
+  }
+
+  static findByName(name) {
+    try {
+      const db = getDatabase();
+      const stmt = db.prepare("SELECT * FROM categories WHERE name = ?");
+      return stmt.get(name);
+    } catch (error) {
+      console.error("Model: Erro ao buscar categoria por nome:", error);
+      throw error;
+    }
+  }
+
+  // Métodos adicionais úteis
+  static update(id, name) {
+    try {
+      const db = getDatabase();
+      const stmt = db.prepare("UPDATE categories SET name = ? WHERE id = ?");
+      const result = stmt.run(name, id);
+      return result.changes > 0;
+    } catch (error) {
+      console.error("Model: Erro ao atualizar categoria:", error);
+      throw error;
+    }
+  }
+
+  static delete(id) {
+    try {
+      const db = getDatabase();
+      const stmt = db.prepare("DELETE FROM categories WHERE id = ?");
+      const result = stmt.run(id);
+      return result.changes > 0;
+    } catch (error) {
+      console.error("Model: Erro ao deletar categoria:", error);
+      throw error;
+    }
+  }
+
+  // Método de transação para operações em lote
+  static createMany(categories) {
+    try {
+      const db = getDatabase();
+      const stmt = db.prepare(
+        "INSERT INTO categories (id, name) VALUES (?, ?)"
+      );
+
+      const insertMany = db.transaction((categories) => {
+        return categories.map((category) => {
+          const id = uuidv4();
+          stmt.run(id, category.name);
+          return { id, name: category.name };
+        });
       });
-    });
+
+      return insertMany(categories);
+    } catch (error) {
+      console.error("Model: Erro ao criar múltiplas categorias:", error);
+      throw error;
+    }
   }
 }
 
