@@ -243,12 +243,8 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
       return "text-[#E9E5E6]";
     };
 
-    const isExpanded = (monthIndex) => {
-      return (
-        openMonth === monthIndex &&
-        (openCategories.has(row.categoryName) || expandedMonths.has(monthIndex))
-      );
-    };
+    const isExpanded = (monthIndex) =>
+      openMonth === monthIndex && openCategories.has(row.categoryName);
 
     return (
       <>
@@ -316,10 +312,11 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
             <tr>
               <td colSpan={14} className="bg-[#1F1D2C]">
                 <div
+                  key={`${row.categoryName}-${openMonth}`}
                   className={`
         overflow-hidden transition-all duration-300 ease-in-out
         transform origin-top
-        ${isExpanded ? "animate-expand max-h-96" : "animate-collapse max-h-0"}
+        ${isExpanded(openMonth) ? "max-h-96" : "max-h-0"}
       `}
                 >
                   <div className="p-4 bg-slate-800 text-[#E9E5E6]">
