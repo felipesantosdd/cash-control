@@ -316,7 +316,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                   className={`
         overflow-hidden transition-all duration-300 ease-in-out
         transform origin-top
-        ${isExpanded(openMonth) ? "max-h-96" : "max-h-0"}
+        ${isExpanded(openMonth) ? "" : "max-h-0"}
       `}
                 >
                   <div className="p-4 bg-slate-800 text-[#E9E5E6]">
@@ -328,21 +328,22 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                     <table className="w-full">
                       <thead>
                         <tr className="text-left">
-                          <th className="p-2 text-[#E9E5E6]">Tipo</th>
-                          <th className="p-2 text-[#E9E5E6]">Comentário</th>
+                          <th className="p-2 text-[#E9E5E6] w-[10%]">Tipo</th>
+                          <th className="p-2 text-[#E9E5E6] w-[30%]">
+                            Comentário
+                          </th>
                           <th
-                            className="p-2 text-[#E9E5E6] cursor-pointer"
+                            className="p-2 text-[#E9E5E6] cursor-pointer w-[15%]"
                             onClick={toggleSortDirection}
                           >
                             Valor {sortDirection === "desc" ? "↓" : "↑"}
                           </th>
-
-                          <th className="p-2 text-[#E9E5E6]">Status</th>
-                          <th className="p-2 text-[#E9E5E6]">Vencimento</th>
-                          <th className="p-2 text-[#E9E5E6]">Pago</th>
-                          <th className="p-2 text-[#E9E5E6] text-center  justify-center align-middle w-[100px]">
-                            Ação
+                          <th className="p-2 text-[#E9E5E6] w-[10%]">Status</th>
+                          <th className="p-2 text-[#E9E5E6] w-[15%]">
+                            Vencimento
                           </th>
+                          <th className="p-2 text-[#E9E5E6] w-[10%]">Pago</th>
+                          <th className="p-2 text-[#E9E5E6] w-[10%]">Ação</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -354,7 +355,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                           return (
                             <tr
                               key={transaction.id}
-                              className={`border-t border-[#B9042C] ${className} cursor-pointer 
+                              className={`border-t border-[#B9042C] ${className}  
     ${selectedRowId === transaction.id ? "bg-blue-900 bg-opacity-50" : ""} 
     hover:bg-blue-900 hover:bg-opacity-30 transition-colors duration-200`}
                             >
@@ -416,7 +417,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
                                   <LinkIcon
                                     style={{
                                       margin: "0 10px",
-                                      cursor: "pointer",
+                                      cursor: transaction.link ? "pointer" : "",
                                     }}
                                     color={
                                       transaction.link ? "error" : "disabled"
