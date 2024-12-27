@@ -67,6 +67,7 @@ const App = () => {
           valor: transaction.valor,
           tipo: transaction.tipo,
           category_id: transaction.category_id,
+          link: transaction.link,
           comentario: transaction.comentario,
           maturity: newDate.toISOString().split("T")[0],
           pay: false,
