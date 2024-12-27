@@ -5,15 +5,46 @@ import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import MenuIcon from "@mui/icons-material/Menu";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import { IconButton, Tooltip } from "@mui/material";
 
-const MenuAnimado = ({ onAddClick, onCloneClick, onDeleteClick }) => {
+const MenuAnimado = ({
+  onAddClick,
+  onCloneClick,
+  onDeleteClick,
+  openExternal,
+}) => {
   const [showMenu, setShowMenu] = useState(false);
 
   const menuItems = [
-    { icon: <CloseIcon />, onClick: () => setShowMenu(false) },
-    { icon: <DeleteIcon />, onClick: onDeleteClick },
-    { icon: <ContentCopyIcon />, onClick: onCloneClick },
-    { icon: <AddIcon />, onClick: onAddClick },
+    {
+      icon: <CloseIcon />,
+      onClick: () => setShowMenu(false),
+      legend: "Fechar menu de ações",
+    },
+    {
+      icon: <MenuBookIcon />,
+      onClick: () =>
+        openExternal(
+          "https://github.com/felipesantosdd/cash-control#cashcontrol"
+        ),
+      legend: "Abrir documentação no GitHub",
+    },
+    {
+      icon: <DeleteIcon />,
+      onClick: onDeleteClick,
+      legend: "Excluir todas as transações de um mês",
+    },
+    {
+      icon: <ContentCopyIcon />,
+      onClick: onCloneClick,
+      legend: "Duplicar transações para o outro mês",
+    },
+    {
+      icon: <AddIcon />,
+      onClick: onAddClick,
+      legend: "Adicionar nova transação",
+    },
   ];
 
   return (
@@ -28,13 +59,15 @@ const MenuAnimado = ({ onAddClick, onCloneClick, onDeleteClick }) => {
         >
           <div className="flex flex-col-reverse gap-2 mb-2">
             {menuItems.map((item, index) => (
-              <Fab
-                key={index}
-                onClick={item.onClick}
-                style={{ backgroundColor: "#9F0049" }}
-              >
-                {item.icon}
-              </Fab>
+              <Tooltip title={item.legend} placement="left">
+                <Fab
+                  key={index}
+                  onClick={item.onClick}
+                  style={{ backgroundColor: "#9F0049" }}
+                >
+                  {item.icon}
+                </Fab>
+              </Tooltip>
             ))}
           </div>
         </div>

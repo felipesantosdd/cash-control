@@ -24,6 +24,7 @@ const App = () => {
     categories,
     createTransaction,
     deleteTransaction,
+    openLink,
   } = useTransaction();
 
   const handleSubmit = async (formData) => {
@@ -127,6 +128,7 @@ const App = () => {
             onAddClick={() => setIsFormOpen(true)}
             onCloneClick={() => setIsCloneModalOpen(true)}
             onDeleteClick={() => setIsClearMonthModalOpen(true)}
+            openExternal={openLink}
           />
           {/* {showMenu && (
             <>

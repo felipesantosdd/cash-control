@@ -7,7 +7,7 @@ const transactionService = require("./backend/services/transactionService");
 try {
   require("electron-reloader")(module, {
     debug: false,
-    watchRenderer: false,
+    watchRenderer: true,
   });
 } catch (_) {
   console.log("Error");

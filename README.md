@@ -1,130 +1,191 @@
 # CashControl
 
 ## 📋 Descrição
-Um aplicativo Electron para gerenciamento financeiro pessoal que permite o controle de transações por categorias, com visualização anual e mensal dos gastos e receitas.
+
+Um aplicativo Electron para gerenciamento financeiro pessoal que permite o controle de transações por categorias, com visualização anual e mensal dos gastos e receitas. Construído com Electron, React e SQLite para fornecer uma experiência desktop robusta e responsiva.
 
 ## 🚀 Principais Funcionalidades
+
 - Visualização de transações por categoria e mês
 - Controle de status de pagamento
 - Balanço mensal e anual
 - Identificação visual de status (pago, pendente, atrasado)
 - Navegação entre anos
 - Categorização de transações
+- Links externos para comprovantes ou documentos
+- Suporte a múltiplas categorias
+- Interface desktop nativa
 
 ## 💻 Pré-requisitos
-- Node.js
+
+- Node.js 18+
 - npm ou yarn
+- Windows, macOS ou Linux
 
 ## 🛠️ Instalação
 
 1. Clone o repositório
+
 ```bash
 git clone [URL_DO_REPOSITÓRIO]
 ```
 
 2. Instale as dependências
+
 ```bash
 npm install
 ```
 
-3. Inicie o aplicativo
+3. Inicie o aplicativo em modo desenvolvimento
+
 ```bash
-npm start
+npm run dev
 ```
 
-## 🎯 Como Usar
+4. Para criar o instalador
 
-### Criando Categorias
-1. Acesse a seção de categorias
-2. Clique em "Nova Categoria"
-3. Digite o nome da categoria
-4. Confirme a criação
+```bash
+npm run dist
+```
 
-### Adicionando Transações
-1. Clique em "Nova Transação"
-2. Preencha os dados:
-   - Valor
-   - Tipo (entrada/saída)
-   - Categoria
-   - Data de vencimento
-   - Comentário (opcional)
-3. Confirme a criação
+## 🏗️ Estrutura do Projeto
 
-### Visualizando Transações
-- Use os botões de navegação para mudar o ano
-- Clique na seta ao lado do valor mensal para expandir os detalhes
-- Verde indica transação paga
-- Vermelho indica transação atrasada
-- Cinza indica transação pendente dentro do prazo
+```
+src/
+├── backend/
+│   ├── config/
+│   │   └── database.js      # Configuração do SQLite
+│   ├── models/
+│   │   ├── Category.js      # Modelo de categorias
+│   │   └── Transaction.js   # Modelo de transações
+│   └── services/
+│       ├── categoryService.js    # Serviço de categorias
+│       └── transactionService.js # Serviço de transações
+├── context/
+│   └── TransactionContext.jsx    # Contexto React global
+├── main.js                       # Entrada do Electron
+└── preload.js                    # Script de preload do Electron
+```
 
-### Atualizando Status de Pagamento
-- Use o switch na linha da transação para marcar como pago/não pago
-- A atualização é automática e reflete imediatamente na interface
+## 🔧 Tecnologias Utilizadas
 
-## 🔧 Configuração do Banco de Dados
-O aplicativo usa SQLite como banco de dados. As tabelas necessárias são:
+- Electron 33.2.1
+- React 18
+- Better SQLite3
+- Material-UI
+- Tailwind CSS
+- Webpack
+- UUID para IDs únicos
+
+## 📦 Estrutura do Banco de Dados
+
+### Tabela: categories
 
 ```sql
 CREATE TABLE categories (
   id TEXT PRIMARY KEY,
-  name TEXT NOT NULL
+  name TEXT NOT NULL UNIQUE
 );
+```
 
+### Tabela: transactions
+
+```sql
 CREATE TABLE transactions (
   id TEXT PRIMARY KEY,
   valor REAL NOT NULL,
   tipo TEXT NOT NULL,
-  category_id TEXT NOT NULL,
+  category_id TEXT,
   comentario TEXT,
   maturity TEXT,
-  pay INTEGER DEFAULT 0,
+  pay BOOLEAN,
+  link TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (category_id) REFERENCES categories(id)
 );
 ```
 
-## 🌟 Funcionalidades Principais
+## 🎯 API Interna
 
-### TransactionContext
-Gerencia o estado global das transações e fornece métodos para:
-- Buscar transações por ano
-- Criar novas transações
-- Atualizar status de pagamento
-- Gerenciar categorias
+### Categorias
 
-### CollapsibleTable
-Componente principal que:
-- Exibe transações agrupadas por categoria
-- Permite expansão/contração de detalhes mensais
-- Mostra balanço mensal e anual
-- Fornece navegação entre anos
+- `createCategory(name)`: Cria uma nova categoria
+- `getAllCategories()`: Lista todas as categorias
+- `getCategoryById(id)`: Busca categoria por ID
+
+### Transações
+
+- `createTransaction(data)`: Cria nova transação
+- `getTransactionsByYear(year)`: Busca transações por ano
+- `updateTransaction(id, data)`: Atualiza transação
+- `deleteTransaction(id)`: Remove transação
+- `calculateBalance()`: Calcula saldo total
+
+## 💾 Gerenciamento de Estado
+
+O aplicativo usa React Context para gerenciamento de estado global através do `TransactionContext`, que fornece:
+
+- Estado atual das transações e categorias
+- Funções de manipulação de dados
+- Estado de carregamento
+- Navegação entre anos
+
+## 🔒 Segurança
+
+- Uso de SQLite com better-sqlite3 para dados locais
+- Validação de dados em todas as operações
+- Sanitização de inputs
+- Prevenção de SQL injection através de prepared statements
+
+## 🎨 Personalização
+
+O projeto usa Tailwind CSS e Material-UI para estilização. Você pode personalizar:
+
+- Cores dos status
+- Layout da tabela
+- Estilos dos componentes
+- Temas e cores
+
+## 📝 Scripts Disponíveis
+
+- `npm start`: Inicia o app em modo desenvolvimento
+- `npm run dev`: Inicia com hot reload
+- `npm run build`: Compila o app
+- `npm run dist`: Cria o instalador
+- `npm run pack`: Cria versão não empacotada
+
+## ❗ Troubleshooting
+
+### Problemas Comuns
+
+1. Erro de banco de dados:
+
+   - Verifique permissões do diretório
+   - Confirme localização do arquivo SQLite
+
+2. Erro ao criar transações:
+
+   - Verifique formato dos dados
+   - Confirme existência da categoria
+
+3. Problemas de build:
+   - Limpe cache: `npm cache clean --force`
+   - Reinstale node_modules
+
+### Localização do Banco de Dados
+
+- Windows: `%APPDATA%/cash-control/database.sqlite`
+- macOS: `~/Library/Application Support/cash-control/database.sqlite`
+- Linux: `~/.config/cash-control/database.sqlite`
 
 ## 🤝 Contribuindo
-1. Faça um fork do projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+
+1. Fork o projeto
+2. Crie sua branch (`git checkout -b feature/NovaFuncionalidade`)
 3. Commit suas mudanças (`git commit -m 'Add: nova funcionalidade'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
+4. Push para a branch (`git push origin feature/NovaFuncionalidade`)
 5. Abra um Pull Request
 
-## 📝 Licença
-Este projeto está sob a licença [MIT](LICENSE.md)
+## 📄 Licença
 
-## 🎨 Customização
-O projeto usa Tailwind CSS para estilização. Você pode personalizar:
-- Cores dos status (pago, pendente, atrasado)
-- Layout da tabela
-- Estilos dos botões e switches
-- Temas e cores gerais
-
-## ❗ Observações Importantes
-- Mantenha o banco SQLite atualizado
-- Faça backup regularmente
-- As datas são armazenadas em formato ISO
-- Os valores monetários são armazenados como números
-
-## 🐛 Resolução de Problemas
-Se encontrar problemas:
-1. Verifique as permissões do banco de dados
-2. Confirme se todas as dependências estão instaladas
-3. Verifique os logs do console
-4. Limpe o cache do aplicativo se necessário
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
