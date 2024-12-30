@@ -24,25 +24,34 @@ const MenuAnimado = ({
     },
     {
       icon: <MenuBookIcon />,
-      onClick: () =>
+      onClick: () => {
         openExternal(
           "https://github.com/felipesantosdd/cash-control#cashcontrol"
-        ),
+        );
+        setShowMenu(false);
+      },
+
       legend: "Abrir documentação no GitHub",
     },
     {
       icon: <DeleteIcon />,
-      onClick: onDeleteClick,
+      onClick: () => {
+        onDeleteClick(), setShowMenu(false);
+      },
       legend: "Excluir todas as transações de um mês",
     },
     {
       icon: <ContentCopyIcon />,
-      onClick: onCloneClick,
+      onClick: () => {
+        onCloneClick(), setShowMenu(false);
+      },
       legend: "Duplicar transações para o outro mês",
     },
     {
       icon: <AddIcon />,
-      onClick: onAddClick,
+      onClick: () => {
+        onAddClick(), setShowMenu(false);
+      },
       legend: "Adicionar nova transação",
     },
   ];
@@ -73,13 +82,14 @@ const MenuAnimado = ({
         </div>
 
         <Fab
-          className={`transition-transform duration-300 ${
+          className={`transition-transform duration-300 z-50 ${
             !showMenu && "animate-bounce"
           }`}
           onClick={() => setShowMenu(true)}
           style={{
             backgroundColor: "#9F0049",
             display: showMenu ? "none" : "",
+            zIndex: 100,
           }}
         >
           <MenuIcon />

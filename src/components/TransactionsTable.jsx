@@ -452,7 +452,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
   };
 
   return (
-    <div className="space-y-4 relative min-h-screen">
+    <div className="space-y-4 relative">
       <div className="flex items-center justify-center space-x-4 py-4 bg-[#1F1D2C] rounded-lg shadow-sm">
         <button
           onClick={() => handleYearChange("prev")}

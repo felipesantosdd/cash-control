@@ -112,6 +112,24 @@ const App = () => {
             onSubmit={handleSubmit}
           />
         )}
+        <footer
+          className=" flex flex-row justify-around items-center text-white absolute bottom-0 w-[99%]"
+          style={{ paddingBottom: "5rem" }}
+        >
+          <div>
+            <span className="font-semibold">Desenvolvido por:</span>
+            <br />
+            Felipe S. Oliveira
+          </div>
+          <div>
+            <span>
+              &copy; {new Date().getFullYear()} Todos os direitos reservados.
+            </span>
+          </div>
+          <div>
+            <span className="font-semibold">Versão:</span> 1.0.1
+          </div>
+        </footer>
 
         <div
           style={{

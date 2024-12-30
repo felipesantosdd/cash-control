@@ -1,17 +1,22 @@
 const path = require("path");
-const { app, BrowserWindow, ipcMain, shell } = require("electron");
+const { app, BrowserWindow, ipcMain, shell, autoUpdater } = require("electron");
 const { getDatabase } = require("./backend/config/database");
 const categoryService = require("./backend/services/categoryService");
 const transactionService = require("./backend/services/transactionService");
+const UpdateManager = require("./updater");
+
+require("dotenv").config();
 
 try {
   require("electron-reloader")(module, {
     debug: false,
-    watchRenderer: false,
+    watchRenderer: true,
   });
 } catch (_) {
   console.log("Error");
 }
+
+let updateManager;
 
 let mainWindow;
 
@@ -28,6 +33,12 @@ const createWindow = () => {
 
   mainWindow.loadFile(path.join(__dirname, "./public/index.html"));
 };
+
+console.log(process.env.NODE_ENV);
+if (process.env.NODE_ENV === "development") {
+  autoUpdater.autoInstallOnAppQuit = false;
+  autoUpdater.updateConfigPath = path.join(__dirname, "dev-app-update.yml");
+}
 
 // IPC Handlers
 
@@ -66,7 +77,7 @@ ipcMain.handle("get-transactions", async () => {
 
 ipcMain.handle("get-transaction-by-id", async (_, id) => {
   try {
-    const transactions = await transactionService.getTransactionById();
+    const transactions = await transactionService.getTransactionById(id);
     return transactions;
   } catch (error) {
     console.error("Erro ao buscar transação:", error);
@@ -106,6 +117,11 @@ ipcMain.handle("get-categories", async () => {
 
 const initializeApp = async () => {
   try {
+    updateManager = new UpdateManager();
+    updateManager.checkForUpdates();
+    setInterval(() => {
+      updateManager.checkForUpdates();
+    }, 4 * 60 * 60 * 1000);
     await getDatabase();
     createWindow();
     mainWindow.maximize();
@@ -128,12 +144,6 @@ ipcMain.handle("get-transactions-by-year", async (_, year) => {
 });
 
 app.whenReady().then(initializeApp);
-
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-  }
-});
 
 app.on("activate", () => {
   if (BrowserWindow.getAllWindows().length === 0) {
