@@ -37,6 +37,7 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
   const [sortDirection, setSortDirection] = useState("desc");
   const [visibleContent, setVisibleContent] = useState(new Map());
   const {
+    createTransaction,
     updateTransaction,
     currentYear,
     handleYearChange,
@@ -115,7 +116,12 @@ const CollapsibleTable = ({ transactions, categories, onAddClick }) => {
 
   const handleEditSubmit = async (editedData) => {
     try {
-      await updateTransaction(editedData.id, editedData);
+      if (editedData.id) {
+        await updateTransaction(editedData.id, editedData);
+        setEditingTransaction({ ...editingTransaction, id: null });
+      } else {
+        createTransaction(editedData);
+      }
     } catch (error) {
       console.error("Erro ao atualizar transação:", error);
     }
