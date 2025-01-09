@@ -244,6 +244,7 @@ const TransactionForm = ({ onClose, onSubmit, initialData }) => {
         });
 
         setFormData({
+          id: undefined,
           valor: 0,
           tipo: currentType,
           category_id: currentCategory,

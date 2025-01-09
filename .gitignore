@@ -3,3 +3,4 @@ database.sqlite
 /.next
 /dist
 package-lock.json
+.env
