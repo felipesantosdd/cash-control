@@ -110,7 +110,7 @@ const initializeApp = async () => {
     createWindow();
     mainWindow.maximize();
 
-    // mainWindow.removeMenu();
+    mainWindow.removeMenu();
   } catch (error) {
     console.error("Erro ao inicializar aplicação:", error);
     app.quit();
