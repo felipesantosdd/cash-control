@@ -1,6 +1,6 @@
 {
   "name": "cash-control",
-  "version": "1.1.0",
+  "version": "1.01.00",
   "description": "Hello World!",
   "main": "./src/main.js",
   "author": "Felipe S. Oliver",
@@ -42,8 +42,14 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Cash Control",
+      "runAfterFinish": true,
       "installerIcon": "src/assets/icon.ico",
-      "uninstallerIcon": "src/assets/icon.ico"
+      "uninstallerIcon": "src/assets/icon.ico",
+      "installerHeaderIcon": "src/assets/icon.ico",
+      "menuCategory": true,
+      "displayLanguageSelector": true,
+      "deleteAppDataOnUninstall": true,
+      "differentialPackage": true
     },
     "mac": {
       "target": [

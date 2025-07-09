@@ -41,6 +41,10 @@ const api = {
   async openExternal(url) {
     return window.api.openExternal(url);
   },
+
+  async createBackup() {
+    return window.api.createBackup();
+  },
 };
 
 // Contexto
@@ -143,6 +147,17 @@ export const TransactionProvider = ({ children }) => {
     }
   }, []);
 
+  const createBackup = useCallback(async () => {
+    try {
+      const result = await api.createBackup();
+      console.log("Backup criado com sucesso:", result);
+      alert("Backup criado com sucesso! A pasta foi aberta.");
+    } catch (error) {
+      console.error("Erro ao criar backup:", error);
+      alert("Erro ao criar backup: " + error.message);
+    }
+  }, []);
+
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -170,6 +185,7 @@ export const TransactionProvider = ({ children }) => {
     deleteTransaction,
     handleYearChange,
     openLink,
+    createBackup,
     TRANSACTION_TYPES,
   };
 

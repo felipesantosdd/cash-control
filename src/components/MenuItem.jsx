@@ -6,6 +6,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import MenuIcon from "@mui/icons-material/Menu";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
+import BackupIcon from "@mui/icons-material/Backup";
 import { IconButton, Tooltip } from "@mui/material";
 
 const MenuAnimado = ({
@@ -13,6 +14,7 @@ const MenuAnimado = ({
   onCloneClick,
   onDeleteClick,
   openExternal,
+  onBackupClick,
 }) => {
   const [showMenu, setShowMenu] = useState(false);
   const containerRef = useRef(null);
@@ -45,6 +47,11 @@ const MenuAnimado = ({
       icon: <CloseIcon />,
       onClick: () => setShowMenu(false),
       legend: "Fechar menu de ações",
+    },
+    {
+      icon: <BackupIcon />,
+      onClick: onBackupClick,
+      legend: "Criar backup do banco de dados",
     },
     {
       icon: <MenuBookIcon />,

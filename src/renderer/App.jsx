@@ -29,6 +29,7 @@ const App = () => {
     createTransaction,
     deleteTransaction,
     openLink,
+    createBackup,
   } = useTransaction();
 
   const handleSubmit = async (formData) => {
@@ -164,6 +165,7 @@ const App = () => {
             onCloneClick={() => setIsCloneModalOpen(true)}
             onDeleteClick={() => setIsClearMonthModalOpen(true)}
             openExternal={openLink}
+            onBackupClick={createBackup}
           />
         </div>
       </div>

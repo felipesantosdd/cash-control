@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 const { app, BrowserWindow, ipcMain, shell } = require("electron");
 const { getDatabase } = require("./backend/config/database");
 const categoryService = require("./backend/services/categoryService");
@@ -33,6 +34,40 @@ const createWindow = () => {
 
 ipcMain.handle("open-external", async (_, url) => {
   await shell.openExternal(url);
+});
+
+ipcMain.handle("create-backup", async () => {
+  try {
+    const { getDatabase } = require("./backend/config/database");
+    const db = getDatabase();
+    const dbPath = db.name;
+
+    // Cria o diretório Documents se não existir
+    const documentsPath = path.join(require("os").homedir(), "Documents");
+    const backupDir = path.join(documentsPath, "Cash Control Backups");
+
+    if (!fs.existsSync(backupDir)) {
+      fs.mkdirSync(backupDir, { recursive: true });
+    }
+
+    // Nome do arquivo de backup com timestamp
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const backupFileName = `cash-control-backup-${timestamp}.sqlite`;
+    const backupPath = path.join(backupDir, backupFileName);
+
+    // Copia o arquivo do banco
+    fs.copyFileSync(dbPath, backupPath);
+
+    console.log(`Backup criado em: ${backupPath}`);
+
+    // Abre a pasta de backup
+    await shell.openPath(backupDir);
+
+    return { success: true, path: backupPath };
+  } catch (error) {
+    console.error("Erro ao criar backup:", error);
+    throw error;
+  }
 });
 ipcMain.handle("create-transaction", async (_, data) => {
   try {
