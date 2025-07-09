@@ -161,6 +161,7 @@ export const TransactionProvider = ({ children }) => {
     categories,
     loading,
     currentYear,
+    setCurrentYear,
     fetchTransactions,
     fetchCategories,
     createTransaction,

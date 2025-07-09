@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Fab } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -15,6 +15,30 @@ const MenuAnimado = ({
   openExternal,
 }) => {
   const [showMenu, setShowMenu] = useState(false);
+  const containerRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target)
+      ) {
+        setShowMenu(false);
+      }
+    };
+
+    if (showMenu) {
+      // Adiciona um pequeno delay para evitar que o clique que abre o menu também o feche
+      const timeoutId = setTimeout(() => {
+        document.addEventListener("mousedown", handleClickOutside);
+      }, 100);
+
+      return () => {
+        clearTimeout(timeoutId);
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }
+  }, [showMenu]);
 
   const menuItems = [
     {
@@ -48,7 +72,7 @@ const MenuAnimado = ({
   ];
 
   return (
-    <div className="fixed bottom-0 right-10 p-4">
+    <div className="fixed bottom-0 right-10 p-4" ref={containerRef}>
       <div>
         <div
           className={`

@@ -11,12 +11,16 @@ import { useTransaction } from "../context/TransactionContext";
 import { Button, Fab } from "@mui/material";
 import ClearMonthForm from "../components/ClearMonthForm";
 import MenuAnimado from "../components/MenuItem";
+import ChartsPage from "../components/ChartsPage";
+import YearSelector from "../components/YearSelector";
+import YearArrowsSelector from "../components/YearArrowsSelector";
 
 const App = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isCloneModalOpen, setIsCloneModalOpen] = useState(false);
   const [isClearMonthModalOpen, setIsClearMonthModalOpen] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [activeTab, setActiveTab] = useState("transactions");
 
   const {
     loading,
@@ -89,21 +93,52 @@ const App = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0D0C13] to-[#171520]">
       <div className="p-6 mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex flex-row justify-center w-full text-center">
-            <h1 className="text-2xl font-bold text-[#A0052B]">CashControl</h1>
+        <div className="flex flex-col items-center w-full text-center mb-6">
+          <h1 className="text-2xl font-bold text-[#A0052B] mb-2">
+            CashControl
+          </h1>
+          {/* Abas acima do seletor de ano */}
+          <div className="mb-4 w-full flex justify-center">
+            <div className="flex border-b border-gray-700">
+              <button
+                onClick={() => setActiveTab("transactions")}
+                className={`px-6 py-3 text-sm font-medium rounded-t-lg transition-colors ${
+                  activeTab === "transactions"
+                    ? "bg-[#A0052B] text-white"
+                    : "text-gray-400 hover:text-white hover:bg-gray-700"
+                }`}
+              >
+                Transações
+              </button>
+              <button
+                onClick={() => setActiveTab("charts")}
+                className={`px-6 py-3 text-sm font-medium rounded-t-lg transition-colors ${
+                  activeTab === "charts"
+                    ? "bg-[#A0052B] text-white"
+                    : "text-gray-400 hover:text-white hover:bg-gray-700"
+                }`}
+              >
+                Gráficos
+              </button>
+            </div>
           </div>
+          <YearArrowsSelector />
         </div>
 
-        {loading ? (
-          <div className="text-center p-4 text-white">
-            <p>Carregando transações...</p>
-          </div>
+        {/* Conteúdo das Abas */}
+        {activeTab === "transactions" ? (
+          loading ? (
+            <div className="text-center p-4 text-white">
+              <p>Carregando transações...</p>
+            </div>
+          ) : (
+            <TransactionsTable
+              transactions={transactions}
+              categories={categories}
+            />
+          )
         ) : (
-          <TransactionsTable
-            transactions={transactions}
-            categories={categories}
-          />
+          <ChartsPage />
         )}
 
         {isFormOpen && (
@@ -130,48 +165,6 @@ const App = () => {
             onDeleteClick={() => setIsClearMonthModalOpen(true)}
             openExternal={openLink}
           />
-          {/* {showMenu && (
-            <>
-              <Fab
-                onClick={() => setIsFormOpen(true)}
-                style={{ backgroundColor: "#9F0049", marginBottom: "10px" }}
-                aria-label="add"
-              >
-                <AddIcon />
-              </Fab>
-              <Fab
-                onClick={setIsCloneModalOpen}
-                style={{ backgroundColor: "#9F0049", marginBottom: "10px" }}
-                aria-label="add"
-              >
-                <ContentCopyIcon />
-              </Fab>
-              <Fab
-                onClick={() => setIsClearMonthModalOpen(true)}
-                style={{ backgroundColor: "#9F0049", marginBottom: "10px" }}
-                aria-label="add"
-              >
-                <DeleteIcon />
-              </Fab>
-              <Fab
-                onClick={() => setShowMenu(false)}
-                style={{ backgroundColor: "#9F0049", marginBottom: "10px" }}
-                aria-label="add"
-              >
-                <CloseIcon />
-              </Fab>
-            </>
-          )}
-          {!showMenu && (
-            <Fab
-              className="animate-bounce"
-              onClick={() => setShowMenu(true)}
-              style={{ backgroundColor: "#9F0049", marginBottom: "10px" }}
-              aria-label="add"
-            >
-              <MenuIcon />
-            </Fab>
-          )} */}
         </div>
       </div>
       <CloneTransactionsForm
